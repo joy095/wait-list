@@ -1,1 +1,2 @@
-// place files you want to import through the `$lib` alias in this folder.
+// Re-export components for easier imports
+// export { default as Navbar } from './components/Navbar.svelte';

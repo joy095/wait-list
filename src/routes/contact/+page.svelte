@@ -7,35 +7,14 @@
 			<p>
 				<strong>Email:</strong>
 				<a href="mailto:test@example.com" class="text-indigo-600 hover:underline"
-					>test@example.com</a
+					>joykarmakar852@gmail.com</a
 				>
 			</p>
 			<p>
-				<strong>Phone:</strong> +91 98765 43210
+				<strong>Phone:</strong> +91 62955 11263
 			</p>
-			<p>
-				<strong>Address:</strong><br />
-				123 Test Street,<br />
-				Test City, Test State,<br />
-				123456, India
-			</p>
-			<p>We aim to respond to all inquiries within 24-48 business hours.</p>
-		</div>
 
-		<div class="mt-8 text-center">
-			<a href="/payment" class="inline-flex items-center text-indigo-600 hover:underline">
-				<svg
-					xmlns="http://www.w3.org/2000/svg"
-					class="mr-1 h-4 w-4"
-					fill="none"
-					viewBox="0 0 24 24"
-					stroke="currentColor"
-					stroke-width="2"
-				>
-					<path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-				</svg>
-				Back to Payment Test
-			</a>
+			<p>We aim to respond to all inquiries within 24-48 business hours.</p>
 		</div>
 	</div>
 </div>
