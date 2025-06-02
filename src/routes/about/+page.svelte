@@ -1,9 +1,125 @@
-<div class="flex min-h-screen items-center justify-center bg-gray-100 p-4">
-	<div class="w-full max-w-2xl rounded-lg bg-white p-8 shadow-xl">
-		<h1 class="mb-6 text-center text-3xl font-bold text-gray-800">About Us</h1>
+<script lang="ts">
+	import Icon from '@iconify/svelte';
+	import { cubicIn, cubicOut } from 'svelte/easing';
+	import { fade, fly } from 'svelte/transition';
 
-		<div class="space-y-4 text-center text-gray-700">
-			<p>Have questions or need assistance? Feel free to reach out to us!</p>
+	const values = [
+		{
+			icon: 'mage:light-bulb',
+			title: 'Innovation',
+			description: 'Pushing boundaries and creating new possibilities'
+		},
+		{
+			icon: 'ph:handshake-duotone',
+			title: 'Collaboration',
+			description: 'Working together to achieve excellence'
+		},
+		{
+			icon: 'healthicons:chart-line',
+			title: 'Growth',
+			description: 'Continuous improvement and development'
+		},
+		{
+			icon: 'line-md:heart-filled',
+			title: 'Passion',
+			description: 'Dedication to creating meaningful impact'
+		}
+	];
+
+	const galleryImages = [
+		'https://images.unsplash.com/photo-1522071820081-009f0129c71c',
+		'https://images.unsplash.com/photo-1600880292203-757bb62b4baf',
+		'https://images.unsplash.com/photo-1521737711867-e3b97375f902'
+	];
+</script>
+
+<div
+	class="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800"
+>
+	<div
+		class="relative h-[60vh] bg-[url('https://images.unsplash.com/photo-1522071820081-009f0129c71c')] bg-cover bg-center bg-no-repeat"
+	>
+		<div class="bg-opacity-50 absolute inset-0 flex items-center justify-center">
+			<div class="p-8 text-center text-white" in:fade={{ duration: 300, delay: 400 }}>
+				<h1 class="mb-4 text-4xl font-bold md:text-6xl">Nature Meets Style</h1>
+				<p class="text-xl md:text-2xl">
+					Discover the perfect blend of outdoor adventure and fashion
+				</p>
+			</div>
+		</div>
+	</div>
+
+	<div class="container mx-auto px-4 py-16">
+		<div class="grid items-center gap-12 md:grid-cols-2">
+			<div class="relative" out:fly={{ easing: cubicIn, y: -10, duration: 300 }}>
+				<img
+					src="https://images.unsplash.com/photo-1557804506-669a67965ba0"
+					alt="Our Team"
+					class="rounded-lg shadow-xl transition-shadow duration-300 hover:shadow-2xl"
+					loading="lazy"
+				/>
+			</div>
+			<div in:fly={{ easing: cubicOut, y: 10, duration: 300, delay: 400 }}>
+				<h2 class="mb-6 text-3xl font-bold text-gray-800 dark:text-white">Our Story</h2>
+				<p class="mb-6 text-gray-600 dark:text-gray-300">
+					Founded in 2010, we've been at the forefront of digital innovation, creating solutions
+					that transform businesses and enrich lives. Our journey began with a simple vision: to
+					make technology accessible and impactful for everyone.
+				</p>
+				<p class="text-gray-600 dark:text-gray-300">
+					Today, we're a global team of passionate individuals, working together to push the
+					boundaries of what's possible in the digital world.
+				</p>
+			</div>
+		</div>
+	</div>
+
+	<div class="bg-white py-16 dark:bg-gray-800">
+		<div
+			class="container mx-auto px-4 text-center"
+			in:fly={{ easing: cubicOut, y: 10, duration: 300, delay: 400 }}
+		>
+			<h2 class="mb-8 text-4xl font-bold text-gray-800 dark:text-white">Our Mission</h2>
+			<p class="mx-auto max-w-3xl text-xl text-gray-600 italic dark:text-gray-300">
+				"To empower businesses and individuals through innovative technology solutions while
+				maintaining the highest standards of excellence and integrity."
+			</p>
+		</div>
+	</div>
+
+	<div class="container mx-auto px-4 py-16">
+		<h2 class="mb-12 text-center text-3xl font-bold text-gray-800 dark:text-white">Our Values</h2>
+		<div class="grid gap-8 md:grid-cols-4">
+			{#each values as value, index}
+				<div
+					class="rounded-lg bg-white p-6 text-center shadow-lg dark:bg-gray-700"
+					in:fly={{ x: -20, duration: 600, delay: 100 }}
+				>
+					<div class="mb-4 flex justify-center text-4xl text-blue-600 dark:text-blue-400">
+						<Icon icon={value.icon} width="50" height="50" />
+					</div>
+					<h3 class="mb-2 text-xl font-bold text-gray-800 dark:text-white">{value.title}</h3>
+					<p class="text-gray-600 dark:text-gray-300">{value.description}</p>
+				</div>
+			{/each}
+		</div>
+	</div>
+
+	<div class="container mx-auto px-4 py-16">
+		<h2 class="mb-12 text-center text-3xl font-bold text-gray-800 dark:text-white">
+			Life at Our Company
+		</h2>
+		<div class="grid gap-6 md:grid-cols-3">
+			{#each galleryImages as image, index}
+				<div class="relative overflow-hidden rounded-lg">
+					<img
+						src={image}
+						alt={`Gallery Image ${index + 1}`}
+						class="h-64 w-full transform object-cover transition-transform duration-300 hover:scale-105"
+						loading="lazy"
+					/>
+				</div>
+			{/each}
 		</div>
 	</div>
 </div>

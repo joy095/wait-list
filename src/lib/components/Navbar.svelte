@@ -47,13 +47,6 @@
 		}
 	}
 
-	function handleGetStarted() {
-		// Add your button action here
-		console.log('Get Started clicked!');
-		// Example: navigate to mailing list
-		window.location.href = '/mailing-list';
-	}
-
 	onMount(() => {
 		if (browser) {
 			// Set initial position
@@ -86,7 +79,7 @@
 		<!-- Logo Section -->
 		<div class="navbar-brand">
 			<a href="/" class="brand-link">
-				<span class="brand-text">YourBrand</span>
+				<span class="brand-text">Brand</span>
 			</a>
 		</div>
 
@@ -104,9 +97,9 @@
 		</div>
 
 		<!-- CTA Button -->
-		<div class="navbar-actions">
-			<button class="cta-button" on:click={handleGetStarted}> Get Started </button>
-		</div>
+		<a href="/mailing-list" class="navbar-actions transition-all duration-300 hover:-mt-2">
+			<span class="cta-button"> Get Notified </span>
+		</a>
 	</div>
 </nav>
 
@@ -218,18 +211,21 @@
 		background: linear-gradient(135deg, #3b82f6, #8b5cf6);
 		color: white;
 		border: none;
-		padding: 0.75rem 1.5rem;
+		padding: 0.75rem 1.25rem;
 		border-radius: 0.5rem;
 		font-weight: 600;
 		font-size: 0.9rem;
 		cursor: pointer;
 		transition: all 0.3s ease;
 		box-shadow: 0 4px 15px rgba(59, 130, 246, 0.2);
+		transition:
+			background-color 0.3s ease,
+			transform 0.2s ease;
 	}
 
 	.cta-button:hover {
-		transform: translateY(-2px);
 		box-shadow: 0 8px 25px rgba(59, 130, 246, 0.3);
+		transform: translateY(-3px);
 	}
 
 	.cta-button:active {
@@ -249,11 +245,11 @@
 
 	@media (min-width: 1024px) {
 		.nav-list {
-			gap: 2.5rem;
+			gap: 1rem;
 		}
 
 		.cta-button {
-			padding: 0.875rem 2rem;
+			padding: 0.75rem 1.5rem;
 		}
 	}
 
