@@ -1,45 +1,48 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { onMount, getContext } from 'svelte';
 	import { gsap } from 'gsap';
 	import { browser } from '$app/environment';
+	import { supportedLngs } from '$lib/i18n';
+	import { invalidateAll } from '$app/navigation'; // Make sure this is imported
+
+	interface I18nContext {
+		t: (key: string, options?: Record<string, unknown>) => string;
+		changeLanguage: (lang: string) => void;
+		currentLanguage: any;
+	}
+	const { t, changeLanguage, currentLanguage } = getContext<I18nContext>('i18n');
+
+	let selectedLanguage = $currentLanguage;
+
+	$: {
+		console.log('Navbar: selectedLanguage updated to:', selectedLanguage);
+	}
 
 	let navbar: HTMLElement;
 	let lastScrollY = 0;
 	let isVisible = true;
 
-	const navItems = [
-		{ label: 'Home', href: '/' },
-		{ label: 'About', href: '/about' },
-		{ label: 'Services', href: '/services' },
-		{ label: 'Contact', href: '/contact' }
+	$: navItems = [
+		{ label: t('Home'), href: `/?lang=${selectedLanguage}` },
+		{ label: t('About'), href: `/about?lang=${selectedLanguage}` },
+		{ label: t('Services'), href: `/services?lang=${selectedLanguage}` },
+		{ label: 'Contact', href: `/contact?lang=${selectedLanguage}` } // Assuming 'Contact' is also translated
 	];
 
 	function handleScroll() {
 		if (!browser || !navbar) return;
-
 		const currentScrollY = window.scrollY;
 		const scrollDifference = Math.abs(currentScrollY - lastScrollY);
 
-		// Only trigger animation if scroll difference is significant (prevents jittery behavior)
 		if (scrollDifference > 10) {
 			if (currentScrollY > lastScrollY && currentScrollY > 100) {
-				// Scrolling down - hide navbar
 				if (isVisible) {
-					gsap.to(navbar, {
-						y: -100,
-						duration: 0.3,
-						ease: 'power2.out'
-					});
+					gsap.to(navbar, { y: -100, duration: 0.3, ease: 'power2.out' });
 					isVisible = false;
 				}
 			} else {
-				// Scrolling up - show navbar
 				if (!isVisible) {
-					gsap.to(navbar, {
-						y: 0,
-						duration: 0.3,
-						ease: 'power2.out'
-					});
+					gsap.to(navbar, { y: 0, duration: 0.3, ease: 'power2.out' });
 					isVisible = true;
 				}
 			}
@@ -47,12 +50,24 @@
 		}
 	}
 
+	async function handleLanguageChange(event: Event) {
+		const selectElement = event.target as HTMLSelectElement;
+		const newLang = selectElement.value;
+		console.log('Navbar: handleLanguageChange called, new language:', newLang);
+
+		await changeLanguage(newLang); // Updates the language in context (and likely updates the URL too)
+
+		// Option 1: Full reload of the current page
+		location.reload();
+
+		// Option 2: If your i18n system supports URL updates like ?lang=xx, you could also use goto()
+		// import { goto } from '$app/navigation';
+		// await goto(`${window.location.pathname}?lang=${newLang}`);
+	}
+
 	onMount(() => {
 		if (browser) {
-			// Set initial position
 			gsap.set(navbar, { y: 0 });
-
-			// Add scroll listener with throttling
 			let ticking = false;
 			const scrollListener = () => {
 				if (!ticking) {
@@ -63,10 +78,7 @@
 					ticking = true;
 				}
 			};
-
 			window.addEventListener('scroll', scrollListener, { passive: true });
-
-			// Cleanup
 			return () => {
 				window.removeEventListener('scroll', scrollListener);
 			};
@@ -74,21 +86,36 @@
 	});
 </script>
 
-<nav bind:this={navbar} class="navbar" role="navigation" aria-label="Main navigation">
-	<div class="navbar-container">
-		<!-- Logo Section -->
-		<div class="navbar-brand">
-			<a href="/" class="brand-link">
-				<span class="brand-text">Brand</span>
+<nav
+	bind:this={navbar}
+	class="fixed top-0 right-0 left-0 z-50 border-b border-black/10 bg-white/95 backdrop-blur-sm transition-all duration-300
+    dark:border-white/10 dark:bg-gray-900/95"
+	aria-label="Main navigation"
+>
+	<div class="mx-auto flex h-[70px] max-w-7xl items-center justify-between px-4 md:px-8">
+		<div class="flex-shrink-0">
+			<a
+				href={`/?lang=${selectedLanguage}`}
+				class="text-2xl font-bold text-gray-900 no-underline transition-colors duration-300 hover:text-blue-500
+                dark:text-gray-50 dark:hover:text-blue-400"
+			>
+				<span class="bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent"
+					>Brand</span
+				>
 			</a>
 		</div>
 
-		<!-- Navigation Links -->
-		<div class="navbar-nav">
-			<ul class="nav-list">
+		<div class="hidden flex-1 justify-center md:flex">
+			<ul class="m-0 flex list-none gap-8 p-0">
 				{#each navItems as item}
-					<li class="nav-item">
-						<a href={item.href} class="nav-link">
+					<li class="group relative">
+						<a
+							href={item.href}
+							class="relative max-w-fit rounded-md px-4 py-2 text-base font-medium text-gray-600 no-underline transition-all
+                            duration-300 after:absolute after:bottom-0 after:left-1/2 after:h-0.5
+                            after:w-0 after:-translate-x-1/2 after:bg-gradient-to-r after:from-blue-500 after:to-purple-500 after:transition-all after:duration-300 group-hover:after:w-full hover:bg-blue-50 hover:text-blue-500
+                            dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-blue-400"
+						>
 							{item.label}
 						</a>
 					</li>
@@ -96,199 +123,33 @@
 			</ul>
 		</div>
 
-		<!-- CTA Button -->
-		<a href="/mailing-list" class="navbar-actions transition-all duration-300 hover:-mt-2">
-			<span class="cta-button"> Get Notified </span>
-		</a>
+		<div class="flex items-center space-x-4">
+			<div class="language-switcher">
+				<label for="language-select" class="sr-only">{t('change_language')}</label>
+				<select
+					id="language-select"
+					on:change={handleLanguageChange}
+					bind:value={selectedLanguage}
+					class="rounded-md border border-gray-300 bg-white p-2 text-sm focus:ring-2 focus:ring-purple-500 focus:outline-none
+                        dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200"
+				>
+					{#each supportedLngs as lang}
+						<option value={lang}>{lang.toUpperCase()}</option>
+					{/each}
+				</select>
+			</div>
+
+			<a
+				href={`/mailing-list?lang=${selectedLanguage}`}
+				class="flex-shrink-0 transition-all duration-300 hover:-translate-y-0.5"
+			>
+				<span
+					class="cursor-pointer rounded-md bg-gradient-to-r from-blue-500 to-purple-500 px-5 py-2.5 font-semibold text-white shadow-lg transition-all duration-300
+                    hover:-translate-y-0.5 hover:shadow-xl active:translate-y-0"
+				>
+					Get Notified
+				</span>
+			</a>
+		</div>
 	</div>
 </nav>
-
-<style>
-	.navbar {
-		position: fixed;
-		top: 0;
-		left: 0;
-		right: 0;
-		z-index: 1000;
-		background: rgba(255, 255, 255, 0.95);
-		backdrop-filter: blur(10px);
-		-webkit-backdrop-filter: blur(10px);
-		border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-		transition: all 0.3s ease;
-	}
-
-	.navbar-container {
-		max-width: 1200px;
-		margin: 0 auto;
-		padding: 0 1rem;
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		height: 70px;
-	}
-
-	/* Brand/Logo */
-	.navbar-brand {
-		flex-shrink: 0;
-	}
-
-	.brand-link {
-		text-decoration: none;
-		color: #1a1a1a;
-		font-weight: 700;
-		font-size: 1.5rem;
-		transition: color 0.3s ease;
-	}
-
-	.brand-link:hover {
-		color: #3b82f6;
-	}
-
-	.brand-text {
-		background: linear-gradient(135deg, #3b82f6, #8b5cf6);
-		-webkit-background-clip: text;
-		-webkit-text-fill-color: transparent;
-		background-clip: text;
-	}
-
-	/* Navigation */
-	.navbar-nav {
-		display: none;
-		flex: 1;
-		justify-content: center;
-	}
-
-	.nav-list {
-		display: flex;
-		list-style: none;
-		margin: 0;
-		padding: 0;
-		gap: 2rem;
-	}
-
-	.nav-item {
-		position: relative;
-	}
-
-	.nav-link {
-		text-decoration: none;
-		color: #4b5563;
-		font-weight: 500;
-		font-size: 0.95rem;
-		padding: 0.5rem 1rem;
-		border-radius: 0.5rem;
-		transition: all 0.3s ease;
-		position: relative;
-	}
-
-	.nav-link:hover {
-		color: #3b82f6;
-		background-color: rgba(59, 130, 246, 0.1);
-	}
-
-	.nav-link::after {
-		content: '';
-		position: absolute;
-		bottom: -2px;
-		left: 50%;
-		width: 0;
-		height: 2px;
-		background: linear-gradient(135deg, #3b82f6, #8b5cf6);
-		transition: all 0.3s ease;
-		transform: translateX(-50%);
-	}
-
-	.nav-link:hover::after {
-		width: 80%;
-	}
-
-	/* CTA Button */
-	.navbar-actions {
-		flex-shrink: 0;
-	}
-
-	.cta-button {
-		background: linear-gradient(135deg, #3b82f6, #8b5cf6);
-		color: white;
-		border: none;
-		padding: 0.75rem 1.25rem;
-		border-radius: 0.5rem;
-		font-weight: 600;
-		font-size: 0.9rem;
-		cursor: pointer;
-		transition: all 0.3s ease;
-		box-shadow: 0 4px 15px rgba(59, 130, 246, 0.2);
-		transition:
-			background-color 0.3s ease,
-			transform 0.2s ease;
-	}
-
-	.cta-button:hover {
-		box-shadow: 0 8px 25px rgba(59, 130, 246, 0.3);
-		transform: translateY(-3px);
-	}
-
-	.cta-button:active {
-		transform: translateY(0);
-	}
-
-	/* Responsive Design */
-	@media (min-width: 768px) {
-		.navbar-nav {
-			display: flex;
-		}
-
-		.navbar-container {
-			padding: 0 2rem;
-		}
-	}
-
-	@media (min-width: 1024px) {
-		.nav-list {
-			gap: 1rem;
-		}
-
-		.cta-button {
-			padding: 0.75rem 1.5rem;
-		}
-	}
-
-	/* Focus states for accessibility */
-	.brand-link:focus,
-	.nav-link:focus,
-	.cta-button:focus {
-		outline: 2px solid #3b82f6;
-		outline-offset: 2px;
-	}
-
-	/* Reduced motion support */
-	@media (prefers-reduced-motion: reduce) {
-		.navbar,
-		.nav-link,
-		.cta-button,
-		.brand-link {
-			transition: none;
-		}
-	}
-
-	/* Dark mode support */
-	@media (prefers-color-scheme: dark) {
-		.navbar {
-			background: rgba(17, 24, 39, 0.95);
-			border-bottom-color: rgba(255, 255, 255, 0.1);
-		}
-
-		.brand-link {
-			color: #f9fafb;
-		}
-
-		.nav-link {
-			color: #d1d5db;
-		}
-
-		.nav-link:hover {
-			color: #60a5fa;
-			background-color: rgba(96, 165, 250, 0.1);
-		}
-	}
-</style>

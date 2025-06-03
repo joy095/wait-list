@@ -9,12 +9,3 @@
 
 <HomePage />
 
-<style>
-	:global(body) {
-		margin: 0;
-		font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-		background-color: #f8f9fa;
-		color: #333;
-		line-height: 1.6;
-	}
-</style>

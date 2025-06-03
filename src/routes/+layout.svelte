@@ -1,21 +1,87 @@
 <script lang="ts">
 	import '../app.css';
 	import 'lenis/dist/lenis.css';
-	import { onMount, onDestroy } from 'svelte';
+	import { onMount, onDestroy, setContext } from 'svelte';
 	import Lenis from 'lenis';
 	import { browser } from '$app/environment';
 	import Navbar from '$lib/components/Navbar.svelte';
+	import Footer from '$lib/components/Footer.svelte';
+	import { get } from 'svelte/store';
+	import i18n, { initI18n, supportedLngs, currentLanguage } from '$lib/i18n';
+	import { page } from '$app/stores';
+	import { goto, invalidateAll } from '$app/navigation'; // Ensure invalidateAll is imported
 
-	let { children } = $props();
+	interface LayoutData {
+		i18n: {
+			lng: string;
+			resources: {
+				[key: string]: {
+					translation: Record<string, string>;
+				};
+			};
+		};
+	}
+
+	let { data, children }: { data: LayoutData; children: any } = $props();
+
+	let initialized = $state(false);
+
+	onMount(async () => {
+		console.log('--- +layout.svelte onMount START ---');
+		console.log('+layout.svelte: onMount - Initializing i18n with data.i18n.lng:', data.i18n.lng);
+		await initI18n(data.i18n.lng, 'translation');
+		if (data.i18n.resources[data.i18n.lng]) {
+			console.log('+layout.svelte: Adding resource bundle for:', data.i18n.lng);
+			i18n.addResourceBundle(
+				data.i18n.lng,
+				'translation',
+				data.i18n.resources[data.i18n.lng].translation,
+				true,
+				true
+			);
+		}
+		initialized = true;
+		console.log('+layout.svelte: i18n initialized on client, current language:', i18n.language);
+		console.log('--- +layout.svelte onMount END ---');
+	});
+
+	setContext('i18n', {
+		t: i18n.t,
+		changeLanguage: async (lng: string) => {
+			console.log('--- +layout.svelte changeLanguage START ---');
+			console.log('+layout.svelte: changeLanguage called for:', lng);
+
+			// 1. Update i18next's internal language and the Svelte store
+			await i18n.changeLanguage(lng); // This updates i18n's internal language and the Svelte store
+			console.log('+layout.svelte: i18n language changed to:', i18n.language);
+
+			// 2. Update the URL query parameter
+			const url = new URL(get(page).url);
+			url.searchParams.set('lang', lng);
+			const newUrl = url.toString();
+			console.log('+layout.svelte: Attempting to goto new URL:', newUrl);
+
+			// Use goto to update the URL in the address bar without reloading the page
+			// This is crucial for the URL parameter to appear immediately
+			await goto(newUrl, { replaceState: true, noScroll: true });
+			console.log('+layout.svelte: goto completed.');
+
+			// 3. Invalidate all data loaders to force a re-render of the current page
+			// This will cause +layout.ts (and any +page.ts) load functions to re-run
+			console.log('+layout.svelte: Invalidating all data to force re-render.');
+			await invalidateAll();
+			console.log('--- +layout.svelte changeLanguage END ---');
+		},
+		currentLanguage: currentLanguage // Provide the store itself
+	});
 
 	let lenisInstance: Lenis | null = null;
 
 	onMount(() => {
-		// Ensure Lenis only runs on the client-side
 		if (browser) {
 			lenisInstance = new Lenis({
 				duration: 1.2,
-				easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), // standard easing
+				easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
 				smoothWheel: true,
 				wheelMultiplier: 1,
 				touchMultiplier: 2,
@@ -24,12 +90,10 @@
 				autoResize: true
 			});
 
-			// Optional: Log scroll events
 			lenisInstance.on('scroll', (e: any) => {
 				// console.log('Lenis scroll event:', e);
 			});
 
-			// Start the RAF loop
 			function raf(time: DOMHighResTimeStamp) {
 				lenisInstance?.raf(time);
 				requestAnimationFrame(raf);
@@ -45,22 +109,26 @@
 	});
 </script>
 
-<!-- Add Navbar -->
 <Navbar />
 
-<!-- Main Content with top padding to account for fixed navbar -->
-<main class="main-content">
-	{@render children()}
+<main class="min-h-screen pt-[70px]">
+	{#if initialized}
+		{@render children()}
+	{:else}
+		<div class="flex min-h-screen items-center justify-center bg-gray-100 text-gray-700">
+			Loading translations...
+		</div>
+	{/if}
 </main>
 
-<style>
-	.main-content {
-		padding-top: 70px; /* Height of navbar */
-		min-height: 100vh;
-	}
+<Footer />
 
-	:global(body) {
+<style global>
+	@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+
+	body {
 		margin: 0;
 		padding: 0;
+		font-family: 'Inter', sans-serif;
 	}
 </style>

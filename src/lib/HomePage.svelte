@@ -1,56 +1,79 @@
 <script lang="ts">
-	import { fly, fade } from 'svelte/transition';
+	import { fly } from 'svelte/transition';
 	import { quintOut } from 'svelte/easing';
-	import { inView } from '$lib/actions/inView'; // Ensure this path is correct for your inView action
-	import Icon from '@iconify/svelte'; // For icons in feature cards
+	import { inView } from '$lib/actions/inView';
+	import Icon from '@iconify/svelte';
+	import { getContext } from 'svelte';
+	// Removed supportedLngs import as it's not directly used here anymore
+
+	// Get the i18n context
+	interface I18nContext {
+		t: (key: string, options?: Record<string, unknown>) => string;
+		changeLanguage: (lang: string) => void;
+		currentLanguage: any; // Still needed if you use currentLanguage for other purposes on the page
+	}
+	const { t, changeLanguage, currentLanguage } = getContext<I18nContext>('i18n');
+
+	// Removed selectedLanguage binding as the select is no longer here
+	// let selectedLanguage = $currentLanguage;
 
 	const currentYear = new Date().getFullYear();
 
-	// State variables for section visibility and triggering animations
 	let heroVisible = false;
 	let featuresVisible = false;
-	let demoContentVisible: boolean[] = Array(10).fill(false); // For individual demo sections
+	let ctaVisible = false;
+	let demoContentVisible: boolean[] = Array(5).fill(false);
 	let footerVisible = false;
 
-	// Data for feature cards
 	const features = [
 		{
 			icon: 'ph:rocket-launch-duotone',
-			title: 'Blazing Fast',
-			description: 'Optimized for speed and performance, ensuring a seamless user experience.'
+			titleKey: 'blazing_fast_title',
+			descriptionKey: 'blazing_fast_desc'
 		},
 		{
-			icon: 'ph:envelope-simple-duotone',
-			title: 'Stay Updated',
-			description: 'Subscribe to our mailing list for the latest news and exclusive offers.'
+			icon: 'ph:paint-brush-broad-duotone',
+			titleKey: 'stunning_design_title',
+			descriptionKey: 'stunning_design_desc'
 		},
 		{
-			icon: 'ph:sparkle-duotone',
-			title: 'Simple & Clean',
-			description: 'A focus on intuitive usability and a sleek, minimalist design.'
+			icon: 'ph:shield-check-duotone',
+			titleKey: 'secure_reliable_title',
+			descriptionKey: 'secure_reliable_desc'
+		},
+		{
+			icon: 'ph:headset-duotone',
+			titleKey: 'dedicated_support_title',
+			descriptionKey: 'dedicated_support_desc'
 		}
 	];
+
+	// Removed handleLanguageChange function as the select is no longer here
+	// function handleLanguageChange(event: Event) {
+	//     const selectElement = event.target as HTMLSelectElement;
+	//     changeLanguage(selectElement.value);
+	// }
 </script>
 
 <div class="font-inter min-h-screen bg-gray-50 text-gray-800 dark:bg-gray-900 dark:text-gray-200">
 	<section
-		class="relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-gradient-to-br from-blue-600 to-purple-700 p-4 text-white"
+		class="relative flex h-screen flex-col items-center justify-center overflow-hidden bg-gradient-to-br from-blue-600 to-purple-700 p-4 text-white"
 		use:inView={{ threshold: 0.1 }}
 		on:inview={() => (heroVisible = true)}
 	>
 		{#if heroVisible}
 			<div class="z-10 text-center" in:fly={{ y: 50, duration: 1000, easing: quintOut }}>
 				<h1 class="mb-4 text-5xl leading-tight font-extrabold drop-shadow-lg md:text-7xl">
-					Welcome to Our Awesome Site!
+					{t('home_page_title')}
 				</h1>
 				<p class="mx-auto mb-8 max-w-3xl text-xl opacity-90 md:text-2xl">
-					Your one-stop destination for everything you need to know and more.
+					{t('welcome')} Your one-stop destination for everything you need to know and more.
 				</p>
 				<a
-					href="/mailing-list"
-					class="inline-block rounded-full bg-white px-8 py-3 font-bold text-purple-700 shadow-lg transition-all duration-300 hover:scale-105 hover:bg-gray-100"
+					href="/services"
+					class="inline-block transform rounded-full bg-white px-8 py-3 font-bold text-purple-700 shadow-lg transition-all duration-300 hover:scale-105 hover:bg-gray-100"
 				>
-					Join Our Mailing List!
+					{t('explore_services')}
 				</a>
 			</div>
 		{/if}
@@ -77,29 +100,52 @@
 		on:inview={() => (featuresVisible = true)}
 	>
 		<div class="container mx-auto text-center">
-			<h2 class="mb-4 text-4xl font-bold text-gray-800 dark:text-white">Key Features</h2>
+			<h2 class="mb-4 text-4xl font-bold text-gray-800 dark:text-white">{t('why_choose_us')}</h2>
 			<p class="mx-auto mb-12 max-w-3xl text-lg text-gray-600 dark:text-gray-300">
-				Discover what makes our platform stand out from the rest.
+				We combine creativity with technical expertise to deliver solutions that truly stand out.
 			</p>
-			<div class="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
+			<div class="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-4">
 				{#each features as feature, i}
 					{#if featuresVisible}
 						<div
-							class="flex flex-col items-center rounded-xl bg-gray-100 p-6 text-center shadow-md transition-transform duration-300 hover:scale-105 hover:shadow-lg dark:bg-gray-700"
-							in:fly={{ y: 50, duration: 700, delay: i * 150, easing: quintOut }}
+							class="flex transform cursor-pointer flex-col items-center rounded-xl bg-gray-100 p-6 text-center shadow-md transition-transform duration-300 hover:scale-105 hover:shadow-lg dark:bg-gray-700"
+							in:fly={{ y: 50, duration: 700, delay: i * 100, easing: quintOut }}
 						>
 							<div class="mb-4 text-5xl text-blue-600 dark:text-blue-400">
 								<Icon icon={feature.icon} width="50" height="50" />
 							</div>
 							<h3 class="mb-2 text-xl font-semibold text-gray-800 dark:text-white">
-								{feature.title}
+								{t(feature.titleKey)}
 							</h3>
-							<p class="text-gray-600 dark:text-gray-300">{feature.description}</p>
+							<p class="text-gray-600 dark:text-gray-300">{t(feature.descriptionKey)}</p>
 						</div>
 					{/if}
 				{/each}
 			</div>
 		</div>
+	</section>
+
+	<section
+		class="bg-purple-600 py-20 text-center text-white"
+		use:inView={{ threshold: 0.3 }}
+		on:inview={() => (ctaVisible = true)}
+	>
+		{#if ctaVisible}
+			<div class="container mx-auto px-4" in:fly={{ y: 50, duration: 800, easing: quintOut }}>
+				<h2 class="mb-6 text-4xl font-bold drop-shadow-md md:text-5xl">
+					{t('ready_to_build')}
+				</h2>
+				<p class="mx-auto mb-10 max-w-3xl text-lg opacity-90 md:text-xl">
+					Whether you have a clear vision or just an idea, we're here to help bring it to life.
+				</p>
+				<a
+					href="/contact"
+					class="inline-block transform rounded-full bg-white px-10 py-4 font-bold text-purple-700 shadow-xl transition-all duration-300 hover:scale-105 hover:bg-gray-100"
+				>
+					{t('get_free_quote')}
+				</a>
+			</div>
+		{/if}
 	</section>
 
 	<section class="bg-gray-50 px-4 py-20 md:px-8 lg:px-16 dark:bg-gray-900">
@@ -149,53 +195,38 @@
 				in:fly={{ y: 20, duration: 500, easing: quintOut }}
 			>
 				<div class="mb-4 md:mb-0">
-					<p class="text-sm">&copy; {currentYear} Your Company Name. All rights reserved.</p>
-					<p class="text-xs text-gray-400">Made with ❤️ in India.</p>
+					<p class="text-sm">{t('copyright', { year: currentYear })}</p>
+					<p class="text-xs text-gray-400">{t('made_with_love')}</p>
 				</div>
 
 				<nav class="flex flex-wrap justify-center space-x-4">
 					<a
 						href="/terms"
 						class="text-sm text-gray-300 transition-colors hover:text-white hover:underline"
-						>Terms and Conditions</a
+						>{t('terms_conditions')}</a
 					>
 					<a
 						href="/privacy"
 						class="text-sm text-gray-300 transition-colors hover:text-white hover:underline"
-						>Privacy Policy</a
+						>{t('privacy_policy')}</a
 					>
 					<a
 						href="/shipping"
 						class="text-sm text-gray-300 transition-colors hover:text-white hover:underline"
-						>Shipping Policy</a
+						>{t('shipping_policy')}</a
 					>
 					<a
 						href="/contact"
 						class="text-sm text-gray-300 transition-colors hover:text-white hover:underline"
-						>Contact Us</a
+						>{t('contact_us')}</a
 					>
 					<a
 						href="/cancellation"
 						class="text-sm text-gray-300 transition-colors hover:text-white hover:underline"
-						>Cancellation and Refunds</a
+						>{t('cancellation_refunds')}</a
 					>
 				</nav>
 			</div>
 		{/if}
 	</footer>
 </div>
-
-<style>
-	/* Custom font import (if not using global CSS) */
-	@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap');
-
-	.font-inter {
-		font-family: 'Inter', sans-serif;
-	}
-
-	/* Ensure the body or root element has min-h-screen for full height */
-	html,
-	body {
-		height: 100%;
-	}
-</style>
