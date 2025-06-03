@@ -28,7 +28,11 @@
 			// The endpoint is a GET request that expects the token as a query parameter
 			const response = await fetch(`/confirm-subscription?token=${token}`);
 
-			const data: SubscriptionResponse | ErrorResponse = await response.json();
+			let data: SubscriptionResponse | ErrorResponse = {} as any;
+			const contentType = response.headers.get('content-type') ?? '';
+			if (contentType.includes('application/json')) {
+				data = await response.json();
+			}
 
 			if (response.ok) {
 				// If the response status is 200 OK (success)
