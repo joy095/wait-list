@@ -29,8 +29,6 @@
 
 	const galleryImages = ['img/1.webp', 'img/2.webp', 'img/4.webp'];
 
-	const banner = 'img/2.webp';
-
 	// State variables to control animations - only set to true when in view, no reset needed
 	let storyVisible = false;
 	let missionVisible = false;
@@ -41,7 +39,10 @@
 <div
 	class="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800"
 >
-	<div class="relative h-[60vh] bg-[url({banner})] bg-cover bg-center bg-no-repeat">
+	<div
+		class="relative h-[60vh] bg-cover bg-center bg-no-repeat"
+		style="background-image: url(img/2.webp);"
+	>
 		<div class="bg-opacity-50 absolute inset-0 flex items-center justify-center">
 			<div class="p-8 text-center text-white" in:fly={{ y: -50, duration: 800, easing: quintOut }}>
 				<h1 class="mb-4 text-4xl font-bold md:text-6xl">Nature Meets Style</h1>
