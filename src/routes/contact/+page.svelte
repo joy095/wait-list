@@ -161,9 +161,15 @@
 						<p class="mb-6 px-4 text-gray-600">
 							Or reach out manually to
 							<a
-								href="mailto:joykarmakar852.net@gmail.com"
-								class="text-purple-600 underline transition-colors duration-200 hover:text-purple-800"
-								>joykarmakar852.net@gmail.com</a
+								href="mailto:joykarmakar852@gmail.com"
+								class="text-purple-600 transition-colors duration-200 hover:text-purple-800 hover:underline"
+								>joykarmakar852@gmail.com</a
+							>
+							<br />
+							<a
+								href="tel:916295511263"
+								class="text-purple-600 transition-colors duration-200 hover:text-purple-800 hover:underline"
+								>+91 62955 11263</a
 							>
 						</p>
 						<img

@@ -3,7 +3,8 @@
 	import { page } from '$app/stores';
 	import { fly } from 'svelte/transition';
 	import { quintOut } from 'svelte/easing';
-	import type { SubscriptionResponse, ErrorResponse } from '$lib/types'; // Import types
+	// Assuming these types are defined in a '$lib/types.ts' file
+	import type { SubscriptionResponse, ErrorResponse } from '$lib/types';
 
 	let message: string = 'Confirming your subscription...';
 	let isError: boolean = false;
@@ -55,125 +56,58 @@
 	<meta name="description" content="Confirm your email subscription." />
 </svelte:head>
 
-<div class="confirmation-container">
-	<div class="confirmation-content" in:fly={{ y: -50, duration: 600, easing: quintOut }}>
+<div
+	class="font-inter flex min-h-screen items-center justify-center bg-gradient-to-br from-blue-50 to-purple-50 p-4 text-gray-800 dark:bg-gray-900 dark:text-gray-200"
+>
+	<div
+		class="confirmation-content w-full max-w-md rounded-2xl bg-white p-8 text-center shadow-xl transition-shadow duration-300 hover:shadow-2xl md:p-12 dark:bg-gray-800"
+		in:fly={{ y: -50, duration: 600, easing: quintOut }}
+	>
 		{#if isLoading}
-			<p>{message}</p>
-			<div class="spinner"></div>
+			<p class="mb-6 text-lg">{message}</p>
+			<div
+				class="spinner mx-auto h-10 w-10 animate-spin rounded-full border-4 border-gray-300 border-t-blue-500 dark:border-gray-600 dark:border-t-blue-400"
+			></div>
 		{:else if isError}
-			<h1 class="error-title">Confirmation Failed</h1>
-			<p class="error-message">{message}</p>
-			<a href="/" class="home-button">Go to Homepage</a>
+			<h1 class="mb-4 text-4xl font-extrabold text-red-600 md:text-5xl dark:text-red-400">
+				Confirmation Failed
+			</h1>
+			<p class="mb-6 text-lg text-gray-700 dark:text-gray-300">{message}</p>
+			<a
+				href="/"
+				class="home-button inline-block transform rounded-full bg-blue-600 px-8 py-3 font-bold text-white shadow-lg transition-all duration-300 hover:scale-105 hover:bg-blue-700"
+			>
+				Go to Homepage
+			</a>
 		{:else}
-			<h1 class="success-title">Subscription Confirmed!</h1>
-			<p class="success-message">{message}</p>
-			<a href="/" class="home-button">Go to Homepage</a>
+			<h1 class="mb-4 text-4xl font-extrabold text-green-600 md:text-5xl dark:text-green-400">
+				Subscription Confirmed!
+			</h1>
+			<p class="mb-6 text-lg text-gray-700 dark:text-gray-300">{message}</p>
+			<a
+				href="/"
+				class="home-button inline-block transform rounded-full bg-blue-600 px-8 py-3 font-bold text-white shadow-lg transition-all duration-300 hover:scale-105 hover:bg-blue-700"
+			>
+				Go to Homepage
+			</a>
 		{/if}
 	</div>
 </div>
 
 <style>
-	:global(body) {
-		margin: 0;
-		font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-		background-color: #f0f2f5;
-		color: #333;
-		line-height: 1.6;
+	/* Custom font import (if not using global CSS or Tailwind config) */
+	@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+
+	.font-inter {
+		font-family: 'Inter', sans-serif;
 	}
 
-	.confirmation-container {
-		display: flex;
-		justify-content: center;
-		align-items: center;
-		min-height: 100vh;
-		padding: 20px;
-		box-sizing: border-box;
-		text-align: center;
+	/* Ensure the body or root element has min-h-screen for full height */
+	html,
+	body {
+		height: 100%;
 	}
 
-	.confirmation-content {
-		background-color: #ffffff;
-		padding: 40px;
-		border-radius: 10px;
-		box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
-		max-width: 500px;
-		width: 100%;
-	}
-
-	h1 {
-		font-size: 2.5em;
-		margin-bottom: 15px;
-	}
-
-	.success-title {
-		color: #28a745; /* Green */
-	}
-
-	.error-title {
-		color: #dc3545; /* Red */
-	}
-
-	p {
-		font-size: 1.1em;
-		color: #555;
-		margin-bottom: 20px;
-	}
-
-	.success-message {
-		color: #28a745;
-	}
-
-	.error-message {
-		color: #dc3545;
-	}
-
-	.home-button {
-		display: inline-block;
-		background-color: #007bff;
-		color: white;
-		padding: 12px 25px;
-		border-radius: 8px;
-		text-decoration: none;
-		font-size: 1em;
-		font-weight: bold;
-		transition:
-			background-color 0.3s ease,
-			transform 0.2s ease;
-		box-shadow: 0 3px 10px rgba(0, 123, 255, 0.2);
-	}
-
-	.home-button:hover {
-		background-color: #0056b3;
-		transform: translateY(-2px);
-	}
-
-	/* Basic Spinner Style */
-	.spinner {
-		border: 4px solid rgba(0, 0, 0, 0.1);
-		border-left-color: #007bff;
-		border-radius: 50%;
-		width: 30px;
-		height: 30px;
-		animation: spin 1s linear infinite;
-		margin: 20px auto; /* Center the spinner */
-	}
-
-	@keyframes spin {
-		0% {
-			transform: rotate(0deg);
-		}
-		100% {
-			transform: rotate(360deg);
-		}
-	}
-
-	/* Responsive adjustments */
-	@media (max-width: 768px) {
-		h1 {
-			font-size: 2em;
-		}
-		.confirmation-content {
-			padding: 30px;
-		}
-	}
+	/* No custom CSS needed for .spinner, h1, p, .home-button as Tailwind handles them */
+	/* The animate-spin class is provided by Tailwind CSS directly */
 </style>

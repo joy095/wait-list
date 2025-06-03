@@ -14,12 +14,15 @@ const SMTP_PORT = parseInt(import.meta.env.VITE_SMTP_PORT || '587', 10);
 const SMTP_USER = import.meta.env.VITE_SMTP_USERNAME;
 const SMTP_PASS = import.meta.env.VITE_SMTP_PASSWORD;
 
-// Log the configuration being used (for debugging only, be careful with sensitive info in production logs)
-console.log('Nodemailer Config:');
-console.log('  Host:', SMTP_HOST);
-console.log('  Port:', SMTP_PORT);
-console.log('  User:', SMTP_USER);
-console.log('  Secure (SSL/TLS):', SMTP_PORT === 465); // Check if port is 465 for secure
+// Only log configuration in development
+if (process.env.NODE_ENV === 'development') {
+    console.log('Nodemailer Config:');
+    console.log('  Host:', SMTP_HOST);
+    console.log('  Port:', SMTP_PORT);
+    console.log('  User:', SMTP_USER);
+    console.log('  Secure (SSL/TLS):', SMTP_PORT === 465);
+}
+
 
 const transporter = nodemailer.createTransport({
     host: SMTP_HOST,
