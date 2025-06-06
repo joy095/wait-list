@@ -2,51 +2,61 @@
 	import { onMount, getContext } from 'svelte';
 	import { gsap } from 'gsap';
 	import { browser } from '$app/environment';
-	import { supportedLngs } from '$lib/i18n';
-	import { invalidateAll } from '$app/navigation'; // Make sure this is imported
+	import { invalidateAll } from '$app/navigation';
+	import type { Writable } from 'svelte/store';
 
+	// Define the interface for the i18n context that you're providing
 	interface I18nContext {
-		t: (key: string, options?: Record<string, unknown>) => string;
-		changeLanguage: (lang: string) => void;
-		currentLanguage: any;
+		// `t` function now explicitly takes `namespace` as the first argument
+		t: (namespace: string, key: string, options?: Record<string, unknown>) => string;
+		// `changeLanguage` is an async function, so type it as returning a Promise<void>
+		changeLanguage: (lang: string) => Promise<void>;
+		currentLanguage: Writable<string>;
+		supportedLngs: string[];
 	}
-	const { t, changeLanguage, currentLanguage } = getContext<I18nContext>('i18n');
 
+	// Get the i18n context from the layout
+	const { t, changeLanguage, currentLanguage, supportedLngs } = getContext<I18nContext>('i18n');
+
+	// Svelte reactive declaration to keep selectedLanguage in sync with the store
 	let selectedLanguage = $currentLanguage;
+	$: selectedLanguage = $currentLanguage;
 
-	$: {
-		console.log('Navbar: selectedLanguage updated to:', selectedLanguage);
-	}
+	// Optional: Log language changes for debugging
+	$: console.log('Navbar: selectedLanguage updated to:', selectedLanguage);
 
 	let navbar: HTMLElement;
 	let lastScrollY = 0;
 	let isVisible = true;
 
+	// Use the 'common' namespace for global navigation items
 	$: navItems = [
-		{ label: t('Home'), href: `/?lang=${selectedLanguage}` },
-		{ label: t('About'), href: `/about?lang=${selectedLanguage}` },
-		{ label: t('Services'), href: `/services?lang=${selectedLanguage}` },
-		{ label: 'Contact', href: `/contact?lang=${selectedLanguage}` } // Assuming 'Contact' is also translated
+		{ label: t('common', 'Home'), href: `/?lang=${selectedLanguage}` },
+		{ label: t('common', 'About'), href: `/about?lang=${selectedLanguage}` },
+		{ label: t('common', 'Services'), href: `/services?lang=${selectedLanguage}` },
+		{ label: t('common', 'Contact'), href: `/contact?lang=${selectedLanguage}` }
 	];
 
 	function handleScroll() {
-		if (!browser || !navbar) return;
+		if (!browser || !navbar) return; // Only run in the browser and if navbar element exists
 		const currentScrollY = window.scrollY;
 		const scrollDifference = Math.abs(currentScrollY - lastScrollY);
 
 		if (scrollDifference > 10) {
 			if (currentScrollY > lastScrollY && currentScrollY > 100) {
+				// Scrolling down past 100px, hide navbar
 				if (isVisible) {
 					gsap.to(navbar, { y: -100, duration: 0.3, ease: 'power2.out' });
 					isVisible = false;
 				}
 			} else {
+				// Scrolling up or near top, show navbar
 				if (!isVisible) {
 					gsap.to(navbar, { y: 0, duration: 0.3, ease: 'power2.out' });
 					isVisible = true;
 				}
 			}
-			lastScrollY = currentScrollY;
+			lastScrollY = currentScrollY; // Update last scroll position
 		}
 	}
 
@@ -55,7 +65,9 @@
 		const newLang = selectElement.value;
 		console.log('Navbar: handleLanguageChange called, new language:', newLang);
 
-		await changeLanguage(newLang); // Updates the language in context (and likely updates the URL too)
+		// Call the changeLanguage function from the i18n context
+		await changeLanguage(newLang);
+		console.log('Navbar: Language changed via context.');
 
 		// Option 1: Full reload of the current page
 		location.reload();
@@ -63,12 +75,18 @@
 		// Option 2: If your i18n system supports URL updates like ?lang=xx, you could also use goto()
 		// import { goto } from '$app/navigation';
 		// await goto(`${window.location.pathname}?lang=${newLang}`);
+
+		// invalidateAll() is handled within the changeLanguage function in +layout.svelte,
+		// so calling it here again is redundant and can be removed.
+		// If changeLanguage in +layout.svelte does NOT call invalidateAll(), then keep this line.
+		// await invalidateAll(); // Consider if this is truly needed here or if `changeLanguage` already triggers it
+		console.log('Navbar: Language change process initiated.');
 	}
 
 	onMount(() => {
 		if (browser) {
-			gsap.set(navbar, { y: 0 });
-			let ticking = false;
+			gsap.set(navbar, { y: 0 }); // Ensure navbar is visible on initial load
+			let ticking = false; // Flag to throttle scroll events
 			const scrollListener = () => {
 				if (!ticking) {
 					requestAnimationFrame(() => {
@@ -78,7 +96,8 @@
 					ticking = true;
 				}
 			};
-			window.addEventListener('scroll', scrollListener, { passive: true });
+			window.addEventListener('scroll', scrollListener, { passive: true }); // Use passive for performance
+			// Cleanup function for onDestroy
 			return () => {
 				window.removeEventListener('scroll', scrollListener);
 			};
@@ -125,7 +144,7 @@
 
 		<div class="flex items-center space-x-4">
 			<div class="language-switcher">
-				<label for="language-select" class="sr-only">{t('change_language')}</label>
+				<label for="language-select" class="sr-only">{t('common', 'change_language')}</label>
 				<select
 					id="language-select"
 					on:change={handleLanguageChange}
@@ -147,7 +166,7 @@
 					class="cursor-pointer rounded-md bg-gradient-to-r from-blue-500 to-purple-500 px-5 py-2.5 font-semibold text-white shadow-lg transition-all duration-300
                     hover:-translate-y-0.5 hover:shadow-xl active:translate-y-0"
 				>
-					Get Notified
+					{t('common', 'get_notified')}
 				</span>
 			</a>
 		</div>

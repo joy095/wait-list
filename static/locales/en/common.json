@@ -1,0 +1,16 @@
+{
+	"greeting": "Hello, {{name}}!",
+	"copyright": "© {{year}} Your Company Name. All rights reserved.",
+	"made_with_love": "Made with ❤️ by Our Team",
+	"terms_conditions": "Terms and Conditions",
+	"privacy_policy": "Privacy Policy",
+	"shipping_policy": "Shipping Policy",
+	"contact_us_link": "Contact Us",
+	"cancellation_refunds": "Cancellation and Refunds",
+	"change_language": "Change Language:",
+	"Home": "Home",
+	"About": "About",
+	"Services": "Services",
+	"Contact": "Contact",
+	"get_notified": "Get Notified"
+}

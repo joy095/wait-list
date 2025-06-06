@@ -1,0 +1,16 @@
+{
+	"greeting": "नमस्ते, {{name}}!",
+	"copyright": "© {{year}} आपकी कंपनी का नाम। सभी अधिकार सुरक्षित हैं।",
+	"made_with_love": "हमारी टीम द्वारा ❤️ के साथ बनाया गया",
+	"terms_conditions": "नियम और शर्तें",
+	"privacy_policy": "गोपनीयता नीति",
+	"shipping_policy": "शिपिंग नीति",
+	"contact_us_link": "हमसे संपर्क करें",
+	"cancellation_refunds": "रद्दीकरण और धनवापसी",
+	"change_language": "भाषा बदलें:",
+	"Home": "Home",
+	"About": "About",
+	"Services": "Services",
+	"Contact": "Contact",
+	"get_notified": "अधिसूचना प्राप्त करें"
+}

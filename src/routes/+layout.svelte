@@ -7,18 +7,14 @@
 	import Navbar from '$lib/components/Navbar.svelte';
 	import Footer from '$lib/components/Footer.svelte';
 	import { get } from 'svelte/store';
-	import i18n, { initI18n, supportedLngs, currentLanguage } from '$lib/i18n';
+	import i18n, { initI18n, supportedLngs, currentLanguage, i18nContext } from '$lib/i18n';
 	import { page } from '$app/stores';
 	import { goto, invalidateAll } from '$app/navigation'; // Ensure invalidateAll is imported
 
 	interface LayoutData {
 		i18n: {
 			lng: string;
-			resources: {
-				[key: string]: {
-					translation: Record<string, string>;
-				};
-			};
+			resources: Record<string, Record<string, string>>; // Correctly typed for namespaces
 		};
 	}
 
@@ -29,24 +25,19 @@
 	onMount(async () => {
 		console.log('--- +layout.svelte onMount START ---');
 		console.log('+layout.svelte: onMount - Initializing i18n with data.i18n.lng:', data.i18n.lng);
-		await initI18n(data.i18n.lng, 'translation');
-		if (data.i18n.resources[data.i18n.lng]) {
-			console.log('+layout.svelte: Adding resource bundle for:', data.i18n.lng);
-			i18n.addResourceBundle(
-				data.i18n.lng,
-				'translation',
-				data.i18n.resources[data.i18n.lng].translation,
-				true,
-				true
-			);
-		}
+
+		// Pass the pre-loaded resources directly to initI18n
+		await initI18n(data.i18n.lng, data.i18n.resources);
 		initialized = true;
-		console.log('+layout.svelte: i18n initialized on client, current language:', i18n.language);
+		console.log(
+			'+layout.svelte: i18n initialized on client, current language:',
+			get(i18nContext.currentLanguage)
+		);
 		console.log('--- +layout.svelte onMount END ---');
 	});
 
 	setContext('i18n', {
-		t: i18n.t,
+		...i18nContext,
 		changeLanguage: async (lng: string) => {
 			console.log('--- +layout.svelte changeLanguage START ---');
 			console.log('+layout.svelte: changeLanguage called for:', lng);
