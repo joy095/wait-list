@@ -2,7 +2,17 @@
 	import { quintOut } from 'svelte/easing';
 	import { fly } from 'svelte/transition';
 	// Assuming these types are defined in a './types.ts' file relative to this component
+
+	interface I18nContext {
+		t: (namespace: string, key: string, options?: Record<string, unknown>) => string; // Note the added 'namespace' argument
+		changeLanguage: (lang: string) => void;
+		currentLanguage: Writable<string>;
+	}
+	const { t } = getContext<I18nContext>('i18n');
+
 	import type { SubscriptionRequestBody, SubscriptionResponse, ErrorResponse } from './types';
+	import type { Writable } from 'svelte/store';
+	import { getContext } from 'svelte';
 
 	let name: string = '';
 	let email: string = '';
@@ -197,19 +207,17 @@
 	}
 </script>
 
-<div
-	class="font-inter flex min-h-screen items-center justify-center"
->
+<div class="font-inter flex min-h-screen items-center justify-center">
 	<div
 		class="hover:shadow-xl-strong mx-auto my-16 w-full max-w-xl rounded-3xl bg-white p-8 text-center text-gray-800 shadow-2xl transition-shadow duration-300 md:p-12"
 		in:fly={{ y: 50, duration: 800, easing: quintOut }}
 	>
 		<div class="mb-8">
 			<h2 class="mb-3 text-3xl font-extrabold tracking-tight text-purple-700 md:text-4xl">
-				Join Our Newsletter
+				{t('mailing-list', 'join')}
 			</h2>
 			<p class="text-xl leading-relaxed text-gray-600">
-				Stay updated with our latest news and exclusive offers. We respect your privacy.
+				{t('mailing-list', 'stay_updated')}
 			</p>
 		</div>
 
@@ -233,13 +241,13 @@
 
 				<div class="text-left">
 					<label for="name" class="mb-2 block text-base font-semibold text-gray-700"
-						>Name <span class="text-red-500">*</span></label
+						>{t('mailing-list', 'name_label')} <span class="text-red-500">*</span></label
 					>
 					<input
 						type="text"
 						id="name"
 						bind:value={name}
-						placeholder="Your Full Name"
+						placeholder={t('mailing-list', 'name_label')}
 						required
 						class="w-full rounded-xl border border-gray-300 bg-gray-50 px-4 py-3 text-base text-gray-900 placeholder-gray-500 transition-all duration-200 focus:border-purple-500 focus:bg-white focus:ring-2 focus:ring-purple-200
                         {nameError ? 'border-red-500 bg-red-50' : ''}"
@@ -254,7 +262,7 @@
 
 				<div class="text-left">
 					<label for="email" class="mb-2 block text-base font-semibold text-gray-700"
-						>Email Address <span class="text-red-500">*</span></label
+						>{t('mailing-list', 'email_placeholder')} <span class="text-red-500">*</span></label
 					>
 					<input
 						type="email"
@@ -270,7 +278,7 @@
 						}}
 						class="w-full rounded-xl border border-gray-300 bg-gray-50 px-4 py-3 text-base text-gray-900 placeholder-gray-500 transition-all duration-200 focus:border-purple-500 focus:bg-white focus:ring-2 focus:ring-purple-200
                         {emailInputError ? 'border-red-500 bg-red-50' : ''}"
-						placeholder="email@example.com"
+						placeholder={t('mailing-list', 'email_label')}
 						required
 					/>
 					{#if emailInputError}
@@ -282,20 +290,20 @@
 
 				<div class="text-left">
 					<label for="phone" class="mb-2 block text-base font-semibold text-gray-700"
-						>Phone Number</label
+						>{t('mailing-list', 'phone_label')}</label
 					>
 					<input
 						type="tel"
 						id="phone"
 						bind:value={phone}
-						placeholder="+91-11-23456789"
+						placeholder={t('mailing-list', 'phone_placeholder')}
 						class="w-full rounded-xl border border-gray-300 bg-gray-50 px-4 py-3 text-base text-gray-900 placeholder-gray-500 transition-all duration-200 focus:border-purple-500 focus:bg-white focus:ring-2 focus:ring-purple-200"
 					/>
 				</div>
 
 				<div class="text-left">
 					<label class="mb-2 block text-base font-semibold text-gray-700"
-						>Address <span class="text-red-500">*</span></label
+						>{t('mailing-list', 'address_label')} <span class="text-red-500">*</span></label
 					>
 					<div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
 						<div class="relative">
@@ -303,7 +311,7 @@
 								type="text"
 								id="addressStateSearch"
 								bind:value={stateSearchInput}
-								placeholder="Search or Select State"
+								placeholder={t('mailing-list', 'address_placeholder')}
 								class="w-full rounded-xl border border-gray-300 bg-gray-50 px-4 py-3 text-base text-gray-900 placeholder-gray-500 transition-all duration-200 focus:border-purple-500 focus:bg-white focus:ring-2 focus:ring-purple-200
                                 {addressStateError ? 'border-red-500 bg-red-50' : ''}"
 								on:focus={() => (showStateSuggestions = true)}
@@ -338,7 +346,7 @@
 							type="text"
 							id="addressCity"
 							bind:value={addressCity}
-							placeholder="City"
+							placeholder={t('mailing-list', 'city_placeholder')}
 							required
 							class="w-full rounded-xl border border-gray-300 bg-gray-50 px-4 py-3 text-base text-gray-900 placeholder-gray-500 transition-all duration-200 focus:border-purple-500 focus:bg-white focus:ring-2 focus:ring-purple-200
                             {addressCityError ? 'border-red-500 bg-red-50' : ''}"
@@ -357,12 +365,12 @@
 
 				<div class="text-left">
 					<label for="message" class="mb-2 block text-base font-semibold text-gray-700"
-						>Message</label
+						>{t('mailing-list', 'message_label')}</label
 					>
 					<textarea
 						id="message"
 						bind:value={message}
-						placeholder="Share any thoughts or questions..."
+						placeholder={t('mailing-list', 'message_placeholder')}
 						rows="4"
 						class="w-full rounded-xl border border-gray-300 bg-gray-50 px-4 py-3 text-base text-gray-900 placeholder-gray-500 transition-all duration-200 focus:border-purple-500 focus:bg-white focus:ring-2 focus:ring-purple-200"
 					></textarea>
@@ -374,9 +382,9 @@
 					class="w-full transform rounded-full bg-purple-600 px-8 py-4 text-xl font-bold text-white shadow-lg transition-all duration-300 hover:scale-105 hover:bg-purple-700 hover:shadow-xl disabled:cursor-not-allowed disabled:bg-gray-400 disabled:shadow-none"
 				>
 					{#if isSubmitting}
-						Submitting...
+						{t('mailing-list', 'button_submitting')}
 					{:else}
-						Subscribe
+						{t('mailing-list', 'button')}
 					{/if}
 				</button>
 			</form>

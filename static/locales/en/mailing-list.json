@@ -1,0 +1,17 @@
+{
+	"join": "Join Our Newsletter",
+	"stay_updated": "Stay updated with our latest news and exclusive offers. We respect your privacy.",
+	"name_label": "Name",
+	"name_placeholder": "Your Full Name",
+	"email_label": "Email Address",
+	"email_placeholder": "john@gmail.com",
+	"phone_label": "Phone Number",
+	"phone_placeholder": "+91-11-23456789",
+	"address_label": "Address",
+	"address_placeholder": "Search or Select State",
+	"city_placeholder": "City",
+	"message_label": "Message",
+	"message_placeholder": "Share any thoughts or questions...",
+	"button": "Subscribe",
+	"button_submitting": "Submitting..."
+}

@@ -23,7 +23,7 @@
 	$: selectedLanguage = $currentLanguage;
 
 	// Optional: Log language changes for debugging
-	$: console.log('Navbar: selectedLanguage updated to:', selectedLanguage);
+	// $: console.log('Navbar: selectedLanguage updated to:', selectedLanguage);
 
 	let navbar: HTMLElement;
 	let lastScrollY = 0;
@@ -63,11 +63,11 @@
 	async function handleLanguageChange(event: Event) {
 		const selectElement = event.target as HTMLSelectElement;
 		const newLang = selectElement.value;
-		console.log('Navbar: handleLanguageChange called, new language:', newLang);
+		// console.log('Navbar: handleLanguageChange called, new language:', newLang);
 
 		// Call the changeLanguage function from the i18n context
 		await changeLanguage(newLang);
-		console.log('Navbar: Language changed via context.');
+		// console.log('Navbar: Language changed via context.');
 
 		// Option 1: Full reload of the current page
 		location.reload();
@@ -80,7 +80,7 @@
 		// so calling it here again is redundant and can be removed.
 		// If changeLanguage in +layout.svelte does NOT call invalidateAll(), then keep this line.
 		// await invalidateAll(); // Consider if this is truly needed here or if `changeLanguage` already triggers it
-		console.log('Navbar: Language change process initiated.');
+		// console.log('Navbar: Language change process initiated.');
 	}
 
 	onMount(() => {

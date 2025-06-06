@@ -1,0 +1,22 @@
+{
+	"join": "আমাদের নিউজলেটারে যোগদান করুন",
+
+	"stay_updated": "আমাদের সর্বশেষ খবর এবং এক্সক্লুসিভ অফার সম্পর্কে আপডেট থাকুন। আমরা আপনার গোপনীয়তাকে সম্মান করি।",
+
+	"name_label": "নাম *",
+
+	"name_placeholder": "আপনার পুরো নাম",
+	"email_label": "ইমেল ঠিকানা *",
+	"email_placeholder": "email@example.com",
+
+	"phone_label": "ফোন নম্বর",
+	"phone_placeholder": "+91-11-23456789",
+
+	"address_label": "ঠিকানা *",
+	"address_placeholder": "অনুসন্ধান করুন বা রাজ্য নির্বাচন করুন",
+	"city": "City",
+	"message_label": "বার্তা",
+	"message_placeholder": "যেকোন চিন্তা বা প্রশ্ন শেয়ার করুন...",
+	"button": "সাবস্ক্রাইব করুন",
+	"button_submitting": "জমা দেওয়া হচ্ছে..."
+}

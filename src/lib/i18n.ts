@@ -6,11 +6,11 @@ import { browser } from '$app/environment';
 import { writable } from 'svelte/store';
 
 // Define your namespaces (these should match your JSON file names, e.g., common.json, home.json)
-const namespaces = ['home']; // Add all your relevant namespaces here
+const namespaces = ['home', "mailing-list"]; // Add all your relevant namespaces here
 // const namespaces = ['common', 'home', 'about', 'contact', 'services', 'mailing-list']; // Add all your relevant namespaces here
 const defaultNS = 'common'; // Set 'common' as the default namespace for convenience
 
-export const supportedLngs = ['en', 'hi']; // Ensure this matches your actual supported languages
+export const supportedLngs = ['en', 'hi', 'be']; // Ensure this matches your actual supported languages
 // export const supportedLngs = ['en', 'es']; // Ensure this matches your actual supported languages
 
 // A Svelte store to keep track of the current language, in sync with i18next
@@ -25,8 +25,8 @@ export async function initI18n(
     lng = 'en',
     resources?: Record<string, Record<string, string>>
 ) {
-    console.log('--- i18n.ts initI18n START ---');
-    console.log('i18n.ts: initI18n called with requested lng:', lng);
+    // console.log('--- i18n.ts initI18n START ---');
+    // console.log('i18n.ts: initI18n called with requested lng:', lng);
 
     if (!i18n.isInitialized) {
         console.log('i18n.ts: i18next not initialized, setting up...');
@@ -61,7 +61,7 @@ export async function initI18n(
 
         // Event listener to update the Svelte store when i18next's language changes
         i18n.on('languageChanged', (newLng: string) => {
-            console.log('i18n.ts: i18next languageChanged event fired, newLng:', newLng);
+            // console.log('i18n.ts: i18next languageChanged event fired, newLng:', newLng);
             currentLanguage.set(newLng); // Update the Svelte store
         });
     }
@@ -81,17 +81,17 @@ export async function initI18n(
 
 
     // Ensure i18next's internal language matches the requested language
-    if (i18n.language !== lng) {
-        console.log(`i18n.ts: i18n.language (${i18n.language}) !== requested lng (${lng}). Changing language.`);
-        await i18n.changeLanguage(lng);
-    } else {
-        console.log(`i18n.ts: i18n.language (${i18n.language}) is already the requested lng (${lng}).`);
-    }
+    // if (i18n.language !== lng) {
+    //     console.log(`i18n.ts: i18n.language (${i18n.language}) !== requested lng (${lng}). Changing language.`);
+    //     await i18n.changeLanguage(lng);
+    // } else {
+    //     console.log(`i18n.ts: i18n.language (${i18n.language}) is already the requested lng (${lng}).`);
+    // }
 
     // Ensure the Svelte store reflects the final current i18n language
     currentLanguage.set(i18n.language);
-    console.log('i18n.ts: Setting Svelte store currentLanguage to:', i18n.language);
-    console.log('--- i18n.ts initI18n END ---');
+    // console.log('i18n.ts: Setting Svelte store currentLanguage to:', i18n.language);
+    // console.log('--- i18n.ts initI18n END ---');
 
     return i18n; // Return the i18next instance
 }
@@ -121,11 +121,11 @@ export const t = (namespace: string, key: string, options?: Record<string, unkno
 // Export the changeLanguage function directly from i18next for convenience
 export const changeLanguage = async (lng: string) => {
     if (!supportedLngs.includes(lng)) {
-        console.warn(`i18n.ts: Unsupported language requested: ${lng}. Supported languages:`, supportedLngs);
+        // console.warn(`i18n.ts: Unsupported language requested: ${lng}. Supported languages:`, supportedLngs);
         return;
     }
 
-    console.log('i18n.ts: Direct changeLanguage called for:', lng);
+    // console.log('i18n.ts: Direct changeLanguage called for:', lng);
     await i18n.changeLanguage(lng);
 };
 

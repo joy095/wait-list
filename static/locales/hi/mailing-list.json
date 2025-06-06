@@ -1,0 +1,17 @@
+{
+	"join": "हमारे न्यूज़लैटर से जुड़ें",
+	"stay_updated": "हमारे नवीनतम समाचारों और विशेष ऑफ़र के साथ अपडेट रहें। हम आपकी गोपनीयता का सम्मान करते हैं।",
+	"name_label": "नाम",
+	"name_placeholder": "आपका पूरा नाम",
+	"email_label": "ईमेल पता",
+	"email_placeholder": "john@gamil.com",
+	"phone_label": "फ़ोन नंबर",
+	"phone_placeholder": "+91-11-23456789",
+	"address_label": "पता",
+	"address_placeholder": "राज्य खोजें या चुनें",
+	"city_placeholder": "शहर",
+	"message_label": "संदेश",
+	"message_placeholder": "कोई विचार या प्रश्न साझा करें...",
+	"button": "सदस्यता लें",
+	"button_submitting": "सबमिट कर रहा हूँ..."
+}

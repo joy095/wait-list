@@ -9,13 +9,13 @@ const namespaces = ['common', 'home'];
 const allTranslations = import.meta.glob('/locales/**/*.json', { eager: true });
 
 export const load: LayoutLoad = async ({ url }) => {
-    console.log('--- +layout.ts LOAD START ---');
-    console.log('Layout Load URL:', url.toString());
+    // console.log('--- +layout.ts LOAD START ---');
+    // console.log('Layout Load URL:', url.toString());
 
     const requestedLng = url.searchParams.get('lang');
     const actualLng = supportedLngs.includes(requestedLng || '') ? requestedLng || 'en' : 'en';
 
-    console.log('Layout Load Determined Lang:', actualLng);
+    // console.log('Layout Load Determined Lang:', actualLng);
 
     const i18nInstance = await initI18n(actualLng);
 
@@ -26,17 +26,17 @@ export const load: LayoutLoad = async ({ url }) => {
         const path = `/locales/${actualLng}/${ns}.json`;
         if (allTranslations[path]) {
             serverLoadedResources[ns] = (allTranslations[path] as { default: Record<string, string> }).default;
-            console.log(`+layout.ts: Loaded ${actualLng}/${ns}.json via glob`);
+            // console.log(`+layout.ts: Loaded ${actualLng}/${ns}.json via glob`);
         } else {
-            console.warn(`+layout.ts: Glob did not find translations for ${actualLng}/${ns}.json`);
+            // console.warn(`+layout.ts: Glob did not find translations for ${actualLng}/${ns}.json`);
             serverLoadedResources[ns] = {};
         }
     });
 
-    console.log('Layout Load i18n.language after init/load:', i18nInstance.language);
-    console.log('Layout Load Collected Server Resources:', JSON.stringify(serverLoadedResources, null, 2));
+    // console.log('Layout Load i18n.language after init/load:', i18nInstance.language);
+    // console.log('Layout Load Collected Server Resources:', JSON.stringify(serverLoadedResources, null, 2));
 
-    console.log('--- +layout.ts LOAD END ---');
+    // console.log('--- +layout.ts LOAD END ---');
     return {
         i18n: {
             lng: i18nInstance.language,

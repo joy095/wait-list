@@ -23,45 +23,45 @@
 	let initialized = $state(false);
 
 	onMount(async () => {
-		console.log('--- +layout.svelte onMount START ---');
-		console.log('+layout.svelte: onMount - Initializing i18n with data.i18n.lng:', data.i18n.lng);
+		// console.log('--- +layout.svelte onMount START ---');
+		// console.log('+layout.svelte: onMount - Initializing i18n with data.i18n.lng:', data.i18n.lng);
 
 		// Pass the pre-loaded resources directly to initI18n
 		await initI18n(data.i18n.lng, data.i18n.resources);
 		initialized = true;
-		console.log(
-			'+layout.svelte: i18n initialized on client, current language:',
-			get(i18nContext.currentLanguage)
-		);
-		console.log('--- +layout.svelte onMount END ---');
+		// console.log(
+		// 	'+layout.svelte: i18n initialized on client, current language:',
+		// 	get(i18nContext.currentLanguage)
+		// );
+		// console.log('--- +layout.svelte onMount END ---');
 	});
 
 	setContext('i18n', {
 		...i18nContext,
 		changeLanguage: async (lng: string) => {
-			console.log('--- +layout.svelte changeLanguage START ---');
-			console.log('+layout.svelte: changeLanguage called for:', lng);
+			// console.log('--- +layout.svelte changeLanguage START ---');
+			// console.log('+layout.svelte: changeLanguage called for:', lng);
 
 			// 1. Update i18next's internal language and the Svelte store
 			await i18n.changeLanguage(lng); // This updates i18n's internal language and the Svelte store
-			console.log('+layout.svelte: i18n language changed to:', i18n.language);
+			// console.log('+layout.svelte: i18n language changed to:', i18n.language);
 
 			// 2. Update the URL query parameter
 			const url = new URL(get(page).url);
 			url.searchParams.set('lang', lng);
 			const newUrl = url.toString();
-			console.log('+layout.svelte: Attempting to goto new URL:', newUrl);
+			// console.log('+layout.svelte: Attempting to goto new URL:', newUrl);
 
 			// Use goto to update the URL in the address bar without reloading the page
 			// This is crucial for the URL parameter to appear immediately
 			await goto(newUrl, { replaceState: true, noScroll: true });
-			console.log('+layout.svelte: goto completed.');
+			// console.log('+layout.svelte: goto completed.');
 
 			// 3. Invalidate all data loaders to force a re-render of the current page
 			// This will cause +layout.ts (and any +page.ts) load functions to re-run
-			console.log('+layout.svelte: Invalidating all data to force re-render.');
+			// console.log('+layout.svelte: Invalidating all data to force re-render.');
 			await invalidateAll();
-			console.log('--- +layout.svelte changeLanguage END ---');
+			// console.log('--- +layout.svelte changeLanguage END ---');
 		},
 		currentLanguage: currentLanguage // Provide the store itself
 	});
