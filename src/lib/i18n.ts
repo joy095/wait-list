@@ -6,12 +6,10 @@ import { browser } from '$app/environment';
 import { writable } from 'svelte/store';
 
 // Define your namespaces (these should match your JSON file names, e.g., common.json, home.json)
-const namespaces = ['home', "mailing-list"]; // Add all your relevant namespaces here
-// const namespaces = ['common', 'home', 'about', 'contact', 'services', 'mailing-list']; // Add all your relevant namespaces here
-const defaultNS = 'common'; // Set 'common' as the default namespace for convenience
+const namespaces = ['home', "common", "mailing-list"]; // Add all your relevant namespaces here
+const defaultNS = ''; // Set 'common' as the default namespace for convenience
 
 export const supportedLngs = ['en', 'hi', 'be']; // Ensure this matches your actual supported languages
-// export const supportedLngs = ['en', 'es']; // Ensure this matches your actual supported languages
 
 // A Svelte store to keep track of the current language, in sync with i18next
 export const currentLanguage = writable('en');

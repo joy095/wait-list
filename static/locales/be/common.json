@@ -5,12 +5,12 @@
 	"terms_conditions": "নিয়ম ও শর্তাবলী",
 	"privacy_policy": "গোপনীয়তা নীতি",
 	"shipping_policy": "শিপিং নীতি",
-	"contact_us_link": "আমাদের সাথে যোগাযোগ করুন",
+	"contact_us": "আমাদের সাথে যোগাযোগ করুন",
 	"cancellation_refunds": "বাতিলকরণ এবং ফেরত",
 	"change_language": "ভাষা পরিবর্তন করুন:",
-	"হোম": "হোম",
-	"সম্পর্কে": "সম্পর্কে",
-	"পরিষেবা": "পরিষেবা",
-	"যোগাযোগ": "যোগাযোগ",
-	"get_notified": "বিজ্ঞপ্তি পান"
+	"home_nav_link": "হোম",
+	"about_nav_link": "সম্পর্কে",
+	"services_nav_link": "পরিষেবা",
+	"contact_nav_link": "যোগাযোগ",
+	"get_notified_btn": "বিজ্ঞপ্তি পান"
 }

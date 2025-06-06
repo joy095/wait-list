@@ -5,12 +5,12 @@
 	"terms_conditions": "नियम और शर्तें",
 	"privacy_policy": "गोपनीयता नीति",
 	"shipping_policy": "शिपिंग नीति",
-	"contact_us_link": "हमसे संपर्क करें",
+	"contact_us": "हमसे संपर्क करें",
 	"cancellation_refunds": "रद्दीकरण और धनवापसी",
 	"change_language": "भाषा बदलें:",
-	"Home": "Home",
-	"About": "About",
-	"Services": "Services",
-	"Contact": "Contact",
-	"get_notified": "अधिसूचना प्राप्त करें"
+	"home_nav_link": "होम",
+	"about_nav_link": "इसके बारे में",
+	"services_nav_link": "सेवाएँ",
+	"contact_nav_link": "संपर्क करें",
+	"get_notified_btn": "सूचना प्राप्त करें"
 }

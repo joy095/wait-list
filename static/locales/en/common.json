@@ -5,12 +5,12 @@
 	"terms_conditions": "Terms and Conditions",
 	"privacy_policy": "Privacy Policy",
 	"shipping_policy": "Shipping Policy",
-	"contact_us_link": "Contact Us",
+	"contact_us": "Contact Us",
 	"cancellation_refunds": "Cancellation and Refunds",
 	"change_language": "Change Language:",
-	"Home": "Home",
-	"About": "About",
-	"Services": "Services",
-	"Contact": "Contact",
-	"get_notified": "Get Notified"
+	"home_nav_link": "Home",
+	"about_nav_link": "About",
+	"services_nav_link": "Services",
+	"contact_nav_link": "Contact",
+	"get_notified_btn": "Get Notified"
 }
