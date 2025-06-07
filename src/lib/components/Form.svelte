@@ -219,7 +219,7 @@
 									id="firstName"
 									name="firstName"
 									bind:value={formData.firstName}
-									class="mt-1 block w-full rounded-md border-gray-300 p-2 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+									class="mt-1 block w-full rounded-md border-gray-300 p-2 shadow-sm outline-none focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
 									placeholder="John"
 								/>
 							</div>
@@ -232,7 +232,7 @@
 									id="lastName"
 									name="lastName"
 									bind:value={formData.lastName}
-									class="mt-1 block w-full rounded-md border-gray-300 p-2 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+									class="mt-1 block w-full rounded-md border-gray-300 p-2 shadow-sm outline-none focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
 									placeholder="Doe"
 								/>
 							</div>
@@ -243,7 +243,7 @@
 									id="email"
 									name="email"
 									bind:value={formData.email}
-									class="mt-1 block w-full rounded-md border-gray-300 p-2 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+									class="mt-1 block w-full rounded-md border-gray-300 p-2 shadow-sm outline-none focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
 									placeholder="john.doe@example.com"
 								/>
 							</div>
@@ -284,7 +284,7 @@
 									min="1"
 									max="10"
 									bind:value={formData.satisfactionLevel}
-									class="mt-1 block h-2 w-full cursor-pointer appearance-none rounded-lg bg-gray-200"
+									class="mt-1 block h-2 w-full cursor-pointer appearance-none rounded-lg bg-gray-200 outline-none"
 								/>
 							</div>
 							<div class="mb-4">

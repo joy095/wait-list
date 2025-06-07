@@ -187,7 +187,7 @@
 								>
 								<input
 									type="email"
-									class="w-full rounded-lg border border-gray-300 p-3 transition duration-200 focus:ring-2 focus:ring-purple-500 focus:outline-none {emailError
+									class="w-full rounded-lg border border-gray-300 p-3 transition duration-200 outline-none focus:ring-2 focus:ring-purple-500 focus:outline-none {emailError
 										? 'border-red-500'
 										: ''}"
 									id="uf-imail"
@@ -212,7 +212,7 @@
 								>
 								<input
 									type="text"
-									class="w-full rounded-lg border border-gray-300 p-3 transition duration-200 focus:ring-2 focus:ring-purple-500 focus:outline-none {nameError
+									class="w-full rounded-lg border border-gray-300 p-3 transition duration-200 outline-none focus:ring-2 focus:ring-purple-500 focus:outline-none {nameError
 										? 'border-red-500'
 										: ''}"
 									id="uf-iname"
@@ -232,7 +232,7 @@
 									>Your message</label
 								>
 								<textarea
-									class="min-h-[100px] w-full resize-y rounded-lg border border-gray-300 p-3 transition duration-200 focus:ring-2 focus:ring-purple-500 focus:outline-none {messageError
+									class="min-h-[100px] w-full resize-y rounded-lg border border-gray-300 p-3 transition duration-200 outline-none focus:ring-2 focus:ring-purple-500 focus:outline-none {messageError
 										? 'border-red-500'
 										: ''}"
 									id="uf-itextarea"

@@ -5,6 +5,7 @@ import { z } from 'zod'; // A powerful library for schema validation
 import { randomBytes } from 'crypto';
 import db from '$lib/server/db'; // Assuming your db connection setup
 import { sendConfirmationEmail } from '$lib/server/email'; // Your email sending utility
+import i18n from '$lib/i18n';
 
 // Define a schema for your form data for robust validation
 const formSchema = z.object({
@@ -89,4 +90,16 @@ export const actions = {
             return fail(500, { message: 'An internal server error occurred. Please try again later.' });
         }
     }
+};
+
+
+export const load = async ({ url }) => {
+    const lang = url.searchParams.get('lang') ?? 'en';
+    // set language in your i18n store here
+    // example:
+    i18n.changeLanguage(lang);
+
+    return {
+        lang
+    };
 };
