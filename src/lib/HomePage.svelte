@@ -5,9 +5,12 @@
 	import Icon from '@iconify/svelte';
 	import { getContext } from 'svelte';
 	import type { Writable } from 'svelte/store';
+	// Import the store
+	import { isFormOpen } from '$lib/store';
 
+	// Your existing I18n context logic...
 	interface I18nContext {
-		t: (namespace: string, key: string, options?: Record<string, unknown>) => string; // Note the added 'namespace' argument
+		t: (namespace: string, key: string, options?: Record<string, unknown>) => string;
 		changeLanguage: (lang: string) => void;
 		currentLanguage: Writable<string>;
 	}
@@ -39,6 +42,11 @@
 			descriptionKey: 'dedicated_support_desc'
 		}
 	];
+
+	// Function to open the form by setting the store value to true
+	function openSubscribeForm() {
+		isFormOpen.set(true);
+	}
 </script>
 
 <div class="font-inter min-h-screen bg-gray-50 text-gray-800 dark:bg-gray-900 dark:text-gray-200">
@@ -55,12 +63,12 @@
 				<p class="mx-auto mb-8 max-w-3xl text-xl opacity-90 md:text-2xl">
 					{t('home', 'welcome')} Your one-stop destination for everything you need to know and more.
 				</p>
-				<a
-					href="/services"
+				<button
+					on:click={openSubscribeForm}
 					class="inline-block transform rounded-full bg-white px-8 py-3 font-bold text-purple-700 shadow-lg transition-all duration-300 hover:scale-105 hover:bg-gray-100"
 				>
-					{t('home', 'explore_services')}
-				</a>
+					Subscribe Now
+				</button>
 			</div>
 		{/if}
 	</section>
@@ -113,12 +121,12 @@
 				<p class="mx-auto mb-10 max-w-3xl text-lg opacity-90 md:text-xl">
 					Whether you have a clear vision or just an idea, we're here to help bring it to life.
 				</p>
-				<a
-					href="/contact"
+				<button
+					on:click={openSubscribeForm}
 					class="inline-block transform rounded-full bg-white px-10 py-4 font-bold text-purple-700 shadow-xl transition-all duration-300 hover:scale-105 hover:bg-gray-100"
 				>
 					{t('home', 'get_free_quote')}
-				</a>
+				</button>
 			</div>
 		{/if}
 	</section>

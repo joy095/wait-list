@@ -3,7 +3,7 @@ import { initI18n, supportedLngs } from '$lib/i18n'; // No need for defaultNS he
 import type { LayoutLoad } from './$types';
 
 // Define all your namespaces here, matching the list in your src/lib/i18n.ts
-const namespaces = ['common', 'home'];
+const namespaces = ['common', 'home', 'mailing-list'];
 // const namespaces = ['common', 'home', 'about', 'contact', 'services', 'mailing-list'];
 
 const allTranslations = import.meta.glob('/locales/**/*.json', { eager: true });

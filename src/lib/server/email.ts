@@ -1,44 +1,41 @@
+// src/lib/server/email.ts
 import nodemailer from 'nodemailer';
+import { env } from '$env/dynamic/private'; // Import for server-side environment variables
 
-// Keep your original environment variable access
-if (!import.meta.env.VITE_SMTP_USERNAME || !import.meta.env.VITE_SMTP_PASSWORD) {
+// Ensure SMTP credentials are set
+if (!env.SMTP_USERNAME || !env.SMTP_PASSWORD) {
     console.error('SMTP credentials are not set. Email sending will fail');
 }
 
 const transporter = nodemailer.createTransport({
-    host: import.meta.env.VITE_SMTP_HOST,
-    port: import.meta.env.VITE_SMTP_PORT,
-    secure: true, // Use 'true' for port 465 (SSL) or 'false' for port 587 (TLS) if not explicitly set
+    host: env.SMTP_HOST,
+    port: parseInt(env.SMTP_PORT || '587'), // Ensure port is a number
+    secure: env.SMTP_PORT === '465', // Use 'true' for port 465 (SSL)
     auth: {
-        user: import.meta.env.VITE_SMTP_USERNAME,
-        pass: import.meta.env.VITE_SMTP_PASSWORD,
+        user: env.SMTP_USERNAME,
+        pass: env.SMTP_PASSWORD,
     },
     logger: true,
     debug: true,
 });
 
-const FROM_EMAIL = import.meta.env.VITE_SMTP_USERNAME;
+const FROM_EMAIL = env.SMTP_USERNAME;
 
-// Function signature correctly accepts 'name'
 export async function sendConfirmationEmail({ to, name, token }: { to: string; name: string; token: string }) {
-    if (!import.meta.env.VITE_SMTP_USERNAME || !import.meta.env.VITE_SMTP_PASSWORD) {
+    if (!env.SMTP_USERNAME || !env.SMTP_PASSWORD) {
         console.error('Email sending skipped: SMTP credentials not configured.');
         throw new Error('Email service not configured.');
     }
 
-    const confirmationLink = `${import.meta.env.VITE_BASE_URL}/confirm-subscription?token=${token}`;
+    const confirmationLink = `${env.BASE_URL}/confirm-email?token=${token}`; // Updated path to /confirm-email
 
     const currentYear = new Date().getFullYear();
-
-    // Define your company name and benefits here
-    const companyName = "Your Company Name";
-
+    const companyName = "Your Company Name"; // Define your company name
 
     try {
         const info = await transporter.sendMail({
             from: FROM_EMAIL,
             to: to,
-            // Enhanced Subject Line
             subject: `Almost There! Confirm Your Subscription to ${companyName}`,
             html: `
                 <div style="font-family: 'Inter', Helvetica, Arial, sans-serif; line-height: 1.6; color: #333; background-color: #f4f7f6; padding: 20px;">
@@ -48,7 +45,6 @@ export async function sendConfirmationEmail({ to, name, token }: { to: string; n
                                 <h1 style="font-size: 28px; color: #6a0dad; margin-bottom: 20px;">Welcome ${name || 'Aboard!'}!</h1>
                                 <p style="font-size: 16px; margin-bottom: 15px;">A warm welcome from the ${companyName} team! 🎉</p>
                                 <p style="font-size: 16px; margin-bottom: 25px;">Thank you for taking the first step to stay connected. We're thrilled to have you join our community and look forward to sharing:</p>
-                               
                                 <p style="font-size: 16px; margin-bottom: 30px;">To activate your subscription and start receiving these exciting updates, please click the button below:</p>
                                 <a href="${confirmationLink}" style="display: inline-block; background-color: #6a0dad; color: #ffffff; padding: 14px 28px; border-radius: 50px; text-decoration: none; font-weight: bold; font-size: 16px; box-shadow: 0 4px 10px rgba(106, 0, 173, 0.2);">
                                     Confirm My Subscription

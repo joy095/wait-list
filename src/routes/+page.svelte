@@ -1,4 +1,5 @@
 <script>
+	import Form from '$lib/components/Form.svelte';
 	import HomePage from '$lib/HomePage.svelte';
 </script>
 
@@ -9,3 +10,4 @@
 
 <HomePage />
 
+<Form />

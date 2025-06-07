@@ -1,7 +1,10 @@
 <script lang="ts">
 	import { quintOut } from 'svelte/easing';
 	import { fly } from 'svelte/transition';
+	import { getContext } from 'svelte';
+	import type { Writable } from 'svelte/store';
 	// Assuming these types are defined in a './types.ts' file relative to this component
+	import type { SubscriptionRequestBody, SubscriptionResponse, ErrorResponse } from './types';
 
 	interface I18nContext {
 		t: (namespace: string, key: string, options?: Record<string, unknown>) => string; // Note the added 'namespace' argument
@@ -9,10 +12,6 @@
 		currentLanguage: Writable<string>;
 	}
 	const { t } = getContext<I18nContext>('i18n');
-
-	import type { SubscriptionRequestBody, SubscriptionResponse, ErrorResponse } from './types';
-	import type { Writable } from 'svelte/store';
-	import { getContext } from 'svelte';
 
 	let name: string = '';
 	let email: string = '';
@@ -262,7 +261,7 @@
 
 				<div class="text-left">
 					<label for="email" class="mb-2 block text-base font-semibold text-gray-700"
-						>{t('mailing-list', 'email_placeholder')} <span class="text-red-500">*</span></label
+						>{t('mailing-list', 'email_label')} <span class="text-red-500">*</span></label
 					>
 					<input
 						type="email"
@@ -277,8 +276,8 @@
 							emailInputError = '';
 						}}
 						class="w-full rounded-xl border border-gray-300 bg-gray-50 px-4 py-3 text-base text-gray-900 placeholder-gray-500 transition-all duration-200 focus:border-purple-500 focus:bg-white focus:ring-2 focus:ring-purple-200
-                        {emailInputError ? 'border-red-500 bg-red-50' : ''}"
-						placeholder={t('mailing-list', 'email_label')}
+                         {emailInputError ? 'border-red-500 bg-red-50' : ''}"
+						placeholder={t('mailing-list', 'email_placeholder')}
 						required
 					/>
 					{#if emailInputError}
