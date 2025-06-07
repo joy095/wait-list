@@ -5,7 +5,7 @@ import { env } from '$env/dynamic/private'; // Correct import
 const { Pool } = pg;
 
 // Ensure DATABASE_URL is set
-const databaseUrl = env.DATABASE_URL;;
+const databaseUrl = env.DATABASE_URL;
 
 if (!databaseUrl) {
 	throw new Error('DATABASE_URL is not set in environment variables');

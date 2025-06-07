@@ -1,38 +1,24 @@
 // src/routes/api/contact/+server.ts
 import nodemailer from 'nodemailer';
 import { json } from '@sveltejs/kit';
+import { env } from '$env/dynamic/private'; // Import for server-side environment variables
 
-// IMPORTANT: Ensure your .env file has variables prefixed with VITE_, like:
-// VITE_SMTP_HOST="your_smtp_host" (e.g., "smtp.gmail.com")
-// VITE_SMTP_PORT="587" (or "465" for SSL)
-// VITE_SMTP_USER="your_email@example.com"
-// VITE_SMTP_PASS="your_app_password_or_email_password"
-
-// Get environment variables
-const SMTP_HOST = import.meta.env.VITE_SMTP_HOST;
-const SMTP_PORT = parseInt(import.meta.env.VITE_SMTP_PORT || '587', 10);
-const SMTP_USER = import.meta.env.VITE_SMTP_USERNAME;
-const SMTP_PASS = import.meta.env.VITE_SMTP_PASSWORD;
-
-// Only log configuration in development
-if (process.env.NODE_ENV === 'development') {
-    console.log('Nodemailer Config:');
-    console.log('  Host:', SMTP_HOST);
-    console.log('  Port:', SMTP_PORT);
-    console.log('  User:', SMTP_USER);
-    console.log('  Secure (SSL/TLS):', SMTP_PORT === 465);
+// Ensure SMTP credentials are set
+if (!env.SMTP_USERNAME || !env.SMTP_PASSWORD) {
+    console.error('SMTP credentials are not set. Email sending will fail');
 }
 
-
 const transporter = nodemailer.createTransport({
-    host: SMTP_HOST,
-    port: SMTP_PORT,
-    secure: SMTP_PORT === 465, // Use true for 465 (SSL), false for other ports (TLS)
+    host: env.SMTP_HOST,
+    port: parseInt(env.SMTP_PORT || '587'), // Ensure port is a number
+    secure: env.SMTP_PORT === '465', // Use 'true' for port 465 (SSL)
     auth: {
-        user: SMTP_USER,
-        pass: SMTP_PASS,
+        user: env.SMTP_USERNAME,
+        pass: env.SMTP_PASSWORD,
     },
-});
+    logger: true,
+    debug: true,
+})
 
 /**
  * Handles POST requests to send contact form data.
@@ -52,8 +38,8 @@ export async function POST({ request }) {
         }
 
         const mailOptions = {
-            from: SMTP_USER, // Sender address (should typically match SMTP_USER for authentication)
-            to: SMTP_USER,   // Recipient address (can be your business email, e.g., 'your_business_email@example.com')
+            from: env.SMTP_USERNAME, // Sender address (should typically match SMTP_USER for authentication)
+            to: env.SMTP_USERNAME,   // Recipient address (can be your business email, e.g., 'your_business_email@example.com')
             subject: `Wait list Contact Form Submission from ${name}`,
             html: `
                 <p><strong>Name:</strong> ${name}</p>
