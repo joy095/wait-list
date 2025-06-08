@@ -6,7 +6,7 @@ import { browser } from '$app/environment';
 import { writable } from 'svelte/store';
 
 // Define your namespaces (these should match your JSON file names, e.g., common.json, home.json)
-const namespaces = ['home', "common", "mailing-list"]; // Add all your relevant namespaces here
+const namespaces = ['home', "common", "mailing-list", "form"]; // Add all your relevant namespaces here
 const defaultNS = ''; // Set 'common' as the default namespace for convenience
 
 export const supportedLngs = ['en', 'hi', 'be']; // Ensure this matches your actual supported languages

@@ -4,7 +4,15 @@
 	import { enhance } from '$app/forms';
 	import { fly, fade, scale } from 'svelte/transition';
 	import { isFormOpen } from '$lib/store';
-	import { onMount } from 'svelte';
+	import { getContext, onMount } from 'svelte';
+	import type { Writable } from 'svelte/store';
+
+	interface I18nContext {
+		t: (namespace: string, key: string, options?: Record<string, unknown>) => string;
+		changeLanguage: (lang: string) => void;
+		currentLanguage: Writable<string>;
+	}
+	const { t } = getContext<I18nContext>('i18n');
 
 	// Define the shape of your form data
 	type FormData = {
@@ -218,7 +226,7 @@
 	<div
 		class="backdrop fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4 backdrop-blur-sm"
 		on:click={handleBackdropClick}
-		on:keydown={(e) => e.key === 'Escape' && handleBackdropClick(e)}
+		on:keydown={(e) => e.key === 'Escape' && closeAllModals()}
 		role="dialog"
 		aria-modal="true"
 		tabindex="0"
@@ -253,7 +261,7 @@
 				</button>
 				<div class="p-6 sm:p-8">
 					<h2 class="mb-6 text-center text-2xl font-bold text-gray-900 sm:text-3xl">
-						Tell Us About You
+						{t('form', 'heading')}
 					</h2>
 					<div class="mb-6">
 						<div class="relative h-2 rounded-full bg-gray-200">
@@ -264,7 +272,10 @@
 						</div>
 						<div class="mt-2 flex justify-between text-xs text-gray-600">
 							<span>Step {currentStep} of {totalSteps}</span>
-							<span class="font-medium">Progress: {Math.round($progress * 100)}%</span>
+							<span class="font-medium">
+								{t('form', 'progress')}
+								{Math.round($progress * 100)}%</span
+							>
 						</div>
 					</div>
 					<form method="POST" action="?/submitForm" use:enhance={submitAction}>
@@ -273,20 +284,23 @@
 							class="space-y-5"
 							transition:fade={{ duration: 200 }}
 						>
-							<h3 class="text-lg font-semibold text-gray-800">Your Details</h3>
+							<h3 class="text-lg font-semibold text-gray-800">
+								{t('form', 'your_details')}
+							</h3>
 							<div>
 								<label
 									for="firstName"
 									class="block text-sm font-medium text-gray-700"
 									aria-required="true"
 								>
-									First Name <span class="text-red-500">*</span>
+									{t('form', 'first_name')} <span class="text-red-500">*</span>
 								</label>
 								<div class="relative mt-1">
 									<input
 										type="text"
 										id="firstName"
 										name="firstName"
+										autocomplete="off"
 										bind:value={formData.firstName}
 										class="block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm transition-all focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 {formErrors.firstName
 											? 'error border-red-500'
@@ -325,13 +339,14 @@
 									class="block text-sm font-medium text-gray-700"
 									aria-required="true"
 								>
-									Last Name <span class="text-red-500">*</span>
+									{t('form', 'last_name')} <span class="text-red-500">*</span>
 								</label>
 								<div class="relative mt-1">
 									<input
 										type="text"
 										id="lastName"
 										name="lastName"
+										autocomplete="off"
 										bind:value={formData.lastName}
 										class="block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm transition-all focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 {formErrors.lastName
 											? 'error border-red-500'
@@ -368,7 +383,7 @@
 									class="block text-sm font-medium text-gray-700"
 									aria-required="true"
 								>
-									Email <span class="text-red-500">*</span>
+									{t('form', 'email')} <span class="text-red-500">*</span>
 								</label>
 								<div class="relative mt-1">
 									<input
@@ -408,7 +423,8 @@
 							</div>
 							<fieldset>
 								<legend class="block text-sm font-medium text-gray-700" aria-required="true">
-									Which best describes you? <span class="text-red-500">*</span>
+									{t('form', 'describes_you')}
+									<span class="text-red-500">*</span>
 								</legend>
 								<div class="mt-2 space-y-2">
 									<label class="flex items-center text-sm">
@@ -420,7 +436,7 @@
 											class="mr-2 h-4 w-4 text-indigo-600 focus:ring-indigo-500"
 											aria-describedby="userType-error"
 										/>
-										Customer looking for a Barber
+										{t('form', 'describes_you_1')}
 									</label>
 									<label class="flex items-center text-sm">
 										<input
@@ -430,7 +446,7 @@
 											bind:group={formData.userType}
 											class="mr-2 h-4 w-4 text-indigo-600 focus:ring-indigo-500"
 										/>
-										Customer looking for a Makeup Artist
+										{t('form', 'describes_you_2')}
 									</label>
 									<label class="flex items-center text-sm">
 										<input
@@ -440,7 +456,7 @@
 											bind:group={formData.userType}
 											class="mr-2 h-4 w-4 text-indigo-600 focus:ring-indigo-500"
 										/>
-										Barber Shop Owner
+										{t('form', 'describes_you_3')}
 									</label>
 									<label class="flex items-center text-sm">
 										<input
@@ -450,7 +466,7 @@
 											bind:group={formData.userType}
 											class="mr-2 h-4 w-4 text-indigo-600 focus:ring-indigo-500"
 										/>
-										Makeup Artist (Independent)
+										{t('form', 'describes_you_4')}
 									</label>
 								</div>
 								{#if formErrors.userType}
@@ -466,10 +482,13 @@
 						>
 							{#if formData.userType === 'customer_barber'}
 								<div class="space-y-6">
-									<h3 class="text-lg font-semibold text-gray-800">Barber Questions</h3>
+									<h3 class="text-lg font-semibold text-gray-800">
+										{t('form', 'barber_heading')}
+									</h3>
 									<fieldset>
 										<legend class="block text-sm font-medium text-gray-700">
-											How often do you visit a barber shop? <span class="text-red-500">*</span>
+											{t('form', 'visit_barber')}
+											<span class="text-red-500">*</span>
 										</legend>
 										<select
 											name="visitFrequency"
@@ -480,10 +499,13 @@
 											aria-describedby="visitFrequency-error"
 										>
 											<option value="" disabled>Select frequency...</option>
-											<option value="weekly">Weekly</option>
-											<option value="biweekly">Bi-weekly</option>
-											<option value="monthly">Monthly</option>
-											<option value="few-months">Every few months</option>
+											<option value="weekly">
+												{t('form', 'visit_barber_1')}
+												Weekly</option
+											>
+											<option value="biweekly">{t('form', 'visit_barber_2')}</option>
+											<option value="monthly">{t('form', 'visit_barber_3')}</option>
+											<option value="few-months">{t('form', 'visit_barber_4')}</option>
 										</select>
 										{#if formErrors.visitFrequency}
 											<p id="visitFrequency-error" class="mt-1 text-xs text-red-600">
@@ -493,7 +515,8 @@
 									</fieldset>
 									<fieldset>
 										<legend class="block text-sm font-medium text-gray-700">
-											What services do you typically book? <span class="text-red-500">*</span>
+											{t('form', 'barber_services')}
+											<span class="text-red-500">*</span>
 										</legend>
 										<div class="mt-2 space-y-2">
 											<label class="flex items-center text-sm">
@@ -505,7 +528,7 @@
 													class="mr-2 h-4 w-4 text-indigo-600 focus:ring-indigo-500"
 													aria-describedby="barberServices-error"
 												/>
-												Haircut
+												{t('form', 'barber_services_1')}
 											</label>
 											<label class="flex items-center text-sm">
 												<input
@@ -515,7 +538,7 @@
 													bind:group={formData.barberServices}
 													class="mr-2 h-4 w-4 text-indigo-600 focus:ring-indigo-500"
 												/>
-												Shave
+												{t('form', 'barber_services_2')}
 											</label>
 											<label class="flex items-center text-sm">
 												<input
@@ -525,7 +548,7 @@
 													bind:group={formData.barberServices}
 													class="mr-2 h-4 w-4 text-indigo-600 focus:ring-indigo-500"
 												/>
-												Beard Trim
+												{t('form', 'barber_services_3')}
 											</label>
 											<label class="flex items-center text-sm">
 												<input
@@ -535,7 +558,7 @@
 													bind:group={formData.barberServices}
 													class="mr-2 h-4 w-4 text-indigo-600 focus:ring-indigo-500"
 												/>
-												Facial
+												{t('form', 'barber_services_4')}
 											</label>
 										</div>
 										{#if formErrors.barberServices}
@@ -546,9 +569,8 @@
 									</fieldset>
 									<fieldset>
 										<legend class="block text-sm font-medium text-gray-700">
-											What's most important when choosing a barber? <span class="text-red-500"
-												>*</span
-											>
+											{t('form', 'choosing_barber')}
+											<span class="text-red-500">*</span>
 										</legend>
 										<div class="mt-2 space-y-2">
 											<label class="flex items-center text-sm">
@@ -560,7 +582,7 @@
 													class="mr-2 h-4 w-4 text-indigo-600 focus:ring-indigo-500"
 													aria-describedby="importantFactors-error"
 												/>
-												Availability
+												{t('form', 'choosing_barber_1')}
 											</label>
 											<label class="flex items-center text-sm">
 												<input
@@ -570,7 +592,7 @@
 													bind:group={formData.importantFactors}
 													class="mr-2 h-4 w-4 text-indigo-600 focus:ring-indigo-500"
 												/>
-												Barber's Skill
+												{t('form', 'choosing_barber_2')}
 											</label>
 											<label class="flex items-center text-sm">
 												<input
@@ -580,7 +602,7 @@
 													bind:group={formData.importantFactors}
 													class="mr-2 h-4 w-4 text-indigo-600 focus:ring-indigo-500"
 												/>
-												Online Reviews
+												{t('form', 'choosing_barber_3')}
 											</label>
 										</div>
 										{#if formErrors.importantFactors}
@@ -594,7 +616,7 @@
 											for="bookingFrustrations"
 											class="block text-sm font-medium text-gray-700"
 										>
-											What frustrations do you face when booking a barber appointment?
+											{t('form', 'frustrations_barber')}
 										</label>
 										<textarea
 											id="bookingFrustrations"
@@ -602,15 +624,15 @@
 											bind:value={formData.bookingFrustrations}
 											rows="4"
 											class="block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm transition-all focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
-											placeholder="e.g., difficulty finding available slots, long wait times..."
+											placeholder={t('form', 'frustrations_barber_placeholder')}
 										></textarea>
 										<p class="mt-1 text-xs text-gray-500">
-											Share any challenges you encounter (optional).
+											{t('form', 'feedback_optional')}
 										</p>
 									</div>
 									<div>
 										<label for="generalMessage" class="block text-sm font-medium text-gray-700">
-											Any additional feedback or comments?
+											{t('form', 'feedback')}
 										</label>
 										<textarea
 											id="generalMessage"
@@ -618,10 +640,10 @@
 											bind:value={formData.generalMessage}
 											rows="4"
 											class="block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm transition-all focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
-											placeholder="e.g., suggestions for improving the booking experience..."
+											placeholder={t('form', 'feedback_placeholder')}
 										></textarea>
 										<p class="mt-1 text-xs text-gray-500">
-											Let us know any other thoughts you have (optional).
+											{t('form', 'feedback_optional')}
 										</p>
 									</div>
 								</div>
@@ -629,12 +651,13 @@
 
 							{#if formData.userType === 'customer_makeup'}
 								<div class="space-y-6">
-									<h3 class="text-lg font-semibold text-gray-800">Makeup Questions</h3>
+									<h3 class="text-lg font-semibold text-gray-800">
+										{t('form', 'makeup_heading')}
+									</h3>
 									<fieldset>
 										<legend class="block text-sm font-medium text-gray-700">
-											For what occasions do you book makeup services? <span class="text-red-500"
-												>*</span
-											>
+											{t('form', 'makeup_questions')}
+											<span class="text-red-500">*</span>
 										</legend>
 										<div class="mt-2 space-y-2">
 											<label class="flex items-center text-sm">
@@ -646,7 +669,7 @@
 													class="mr-2 h-4 w-4 text-indigo-600 focus:ring-indigo-500"
 													aria-describedby="makeupOccasions-error"
 												/>
-												Wedding
+												{t('form', 'makeup_questions_1')}
 											</label>
 											<label class="flex items-center text-sm">
 												<input
@@ -656,7 +679,7 @@
 													bind:group={formData.makeupOccasions}
 													class="mr-2 h-4 w-4 text-indigo-600 focus:ring-indigo-500"
 												/>
-												Party/Special Event
+												{t('form', 'makeup_questions_2')}
 											</label>
 											<label class="flex items-center text-sm">
 												<input
@@ -666,7 +689,7 @@
 													bind:group={formData.makeupOccasions}
 													class="mr-2 h-4 w-4 text-indigo-600 focus:ring-indigo-500"
 												/>
-												Photoshoot
+												{t('form', 'makeup_questions_3')}
 											</label>
 										</div>
 										{#if formErrors.makeupOccasions}
@@ -677,9 +700,7 @@
 									</fieldset>
 									<fieldset>
 										<legend class="block text-sm font-medium text-gray-700">
-											What's most important when choosing a makeup artist? <span
-												class="text-red-500">*</span
-											>
+											{t('form', 'choosing_makeup_artist')} <span class="text-red-500">*</span>
 										</legend>
 										<div class="mt-2 space-y-2">
 											<label class="flex items-center text-sm">
@@ -691,7 +712,7 @@
 													class="mr-2 h-4 w-4 text-indigo-600 focus:ring-indigo-500"
 													aria-describedby="importantFactors-error"
 												/>
-												Portfolio/Work
+												{t('form', 'choosing_makeup_artist_1')}
 											</label>
 											<label class="flex items-center text-sm">
 												<input
@@ -701,7 +722,7 @@
 													bind:group={formData.importantFactors}
 													class="mr-2 h-4 w-4 text-indigo-600 focus:ring-indigo-500"
 												/>
-												Online Reviews
+												{t('form', 'choosing_makeup_artist_2')}
 											</label>
 											<label class="flex items-center text-sm">
 												<input
@@ -711,7 +732,7 @@
 													bind:group={formData.importantFactors}
 													class="mr-2 h-4 w-4 text-indigo-600 focus:ring-indigo-500"
 												/>
-												Artist's Specialization
+												{t('form', 'choosing_makeup_artist_3')}
 											</label>
 										</div>
 										{#if formErrors.importantFactors}
@@ -725,7 +746,7 @@
 											for="bookingFrustrations"
 											class="block text-sm font-medium text-gray-700"
 										>
-											What frustrations do you face when booking a makeup appointment?
+											{t('form', 'frustrations_booking_makeup')}
 										</label>
 										<textarea
 											id="bookingFrustrations"
@@ -733,15 +754,15 @@
 											bind:value={formData.bookingFrustrations}
 											rows="4"
 											class="block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm transition-all focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
-											placeholder="e.g., unclear pricing, difficulty contacting artists..."
+											placeholder={t('form', 'frustrations_booking_makeup_placeholder')}
 										></textarea>
 										<p class="mt-1 text-xs text-gray-500">
-											Share any challenges you encounter (optional).
+											{t('form', 'frustrations_booking_makeup_optional')}
 										</p>
 									</div>
 									<div>
 										<label for="generalMessage" class="block text-sm font-medium text-gray-700">
-											Any additional feedback or comments?
+											{t('form', 'feedback')}
 										</label>
 										<textarea
 											id="generalMessage"
@@ -749,10 +770,10 @@
 											bind:value={formData.generalMessage}
 											rows="4"
 											class="block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm transition-all focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
-											placeholder="e.g., suggestions for improving the booking experience..."
+											placeholder={t('form', 'feedback_placeholder')}
 										></textarea>
 										<p class="mt-1 text-xs text-gray-500">
-											Let us know any other thoughts you have (optional).
+											{t('form', 'feedback_optional')}
 										</p>
 									</div>
 								</div>
@@ -760,12 +781,14 @@
 
 							{#if formData.userType === 'owner_barber'}
 								<div class="space-y-6">
-									<h3 class="text-lg font-semibold text-gray-800">Business Questions</h3>
+									<h3 class="text-lg font-semibold text-gray-800">
+										{t('form', 'business_heading')}
+									</h3>
 									<fieldset>
 										<legend class="block text-sm font-medium text-gray-700">
-											Would you use an app that charged commission? <span class="text-red-500"
-												>*</span
-											>
+											{t('form', 'charged_commission')}
+
+											<span class="text-red-500">*</span>
 										</legend>
 										<select
 											name="commissionPreference"
@@ -775,10 +798,10 @@
 												: ''}"
 											aria-describedby="commissionPreference-error"
 										>
-											<option value="" disabled>Select a preference...</option>
-											<option value="yes_5_10">Yes, 5-10%</option>
-											<option value="yes_10_15">Yes, 10-15%</option>
-											<option value="no_monthly_fee">No, prefer a flat monthly fee</option>
+											<option value="" disabled>{t('form', 'charged_commission_0')} </option>
+											<option value="yes_5_10">{t('form', 'charged_commission_1')} </option>
+											<option value="yes_10_15">{t('form', 'charged_commission_2')} </option>
+											<option value="no_monthly_fee">{t('form', 'charged_commission_3')} </option>
 										</select>
 										{#if formErrors.commissionPreference}
 											<p id="commissionPreference-error" class="mt-1 text-xs text-red-600">
@@ -788,9 +811,9 @@
 									</fieldset>
 									<fieldset>
 										<legend class="block text-sm font-medium text-gray-700">
-											Are you open to offering discounts or subscriptions? <span
-												class="text-red-500">*</span
-											>
+											{t('form', 'discounts_subscriptions')}
+
+											<span class="text-red-500">*</span>
 										</legend>
 										<select
 											name="offerDiscounts"
@@ -800,11 +823,17 @@
 												: ''}"
 											aria-describedby="offerDiscounts-error"
 										>
-											<option value="" disabled>Select an option...</option>
-											<option value="yes_10_percent">Yes, discounts up to 10%</option>
+											<option value="" disabled>
+												{t('form', 'discounts_subscriptions_0')}
+											</option>
+											<option value="yes_10_percent"
+												>{t('form', 'discounts_subscriptions_1')}</option
+											>
 											<option value="yes_20_percent">Yes, discounts up to 20%</option>
-											<option value="yes_subscriptions">Yes, open to subscriptions</option>
-											<option value="no">No, not at this time</option>
+											<option value="yes_subscriptions"
+												>{t('form', 'discounts_subscriptions_2')}</option
+											>
+											<option value="no">{t('form', 'discounts_subscriptions_3')}</option>
 										</select>
 										{#if formErrors.offerDiscounts}
 											<p id="offerDiscounts-error" class="mt-1 text-xs text-red-600">
@@ -814,7 +843,7 @@
 									</fieldset>
 									<div>
 										<label for="biggestChallenges" class="block text-sm font-medium text-gray-700">
-											What is your biggest challenge in managing bookings?
+											{t('form', 'managing_bookings')}
 										</label>
 										<textarea
 											id="biggestChallenges"
@@ -822,10 +851,10 @@
 											bind:value={formData.biggestChallenges}
 											rows="4"
 											class="block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm transition-all focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
-											placeholder="e.g., no-shows, attracting new clients..."
+											placeholder={t('form', 'managing_bookings_placeholder')}
 										></textarea>
 										<p class="mt-1 text-xs text-gray-500">
-											Share any challenges you encounter (optional).
+											{t('form', 'managing_bookings_optional')}
 										</p>
 									</div>
 								</div>
@@ -833,12 +862,13 @@
 
 							{#if formData.userType === 'owner_makeup'}
 								<div class="space-y-6">
-									<h3 class="text-lg font-semibold text-gray-800">Business Questions</h3>
+									<h3 class="text-lg font-semibold text-gray-800">
+										{t('form', 'business_heading')}
+									</h3>
 									<fieldset>
 										<legend class="block text-sm font-medium text-gray-700">
-											Would you use an app that charged commission? <span class="text-red-500"
-												>*</span
-											>
+											{t('form', 'charged_commission')}
+											<span class="text-red-500">*</span>
 										</legend>
 										<select
 											name="commissionPreference"
@@ -848,10 +878,12 @@
 												: ''}"
 											aria-describedby="commissionPreference-error"
 										>
-											<option value="" disabled>Select a preference...</option>
-											<option value="yes_5_10">Yes, 5-10%</option>
-											<option value="yes_10_15">Yes, 10-15%</option>
-											<option value="no_monthly_fee">No, prefer a flat monthly fee</option>
+											<option value="" disabled>
+												{t('form', 'charged_commission_0')}
+											</option>
+											<option value="yes_5_10">{t('form', 'charged_commission_1')}</option>
+											<option value="yes_10_15">{t('form', 'charged_commission_2')}</option>
+											<option value="no_monthly_fee">{t('form', 'charged_commission_3')}</option>
 										</select>
 										{#if formErrors.commissionPreference}
 											<p id="commissionPreference-error" class="mt-1 text-xs text-red-600">
@@ -861,9 +893,7 @@
 									</fieldset>
 									<fieldset>
 										<legend class="block text-sm font-medium text-gray-700">
-											Would you use features to showcase your portfolio? <span class="text-red-500"
-												>*</span
-											>
+											{t('form', 'features')} <span class="text-red-500">*</span>
 										</legend>
 										<select
 											name="portfolioInterest"
@@ -873,10 +903,10 @@
 												: ''}"
 											aria-describedby="portfolioInterest-error"
 										>
-											<option value="" disabled>Select an option...</option>
-											<option value="yes_high_priority">Yes, it's a top priority</option>
-											<option value="yes_valuable">Yes, it would be valuable</option>
-											<option value="no">No, not a priority</option>
+											<option value="" disabled> {t('form', 'features_0')} </option>
+											<option value="yes_high_priority"> {t('form', 'features_1')} </option>
+											<option value="yes_valuable"> {t('form', 'features_2')} </option>
+											<option value="no"> {t('form', 'features_3')} </option>
 										</select>
 										{#if formErrors.portfolioInterest}
 											<p id="portfolioInterest-error" class="mt-1 text-xs text-red-600">
@@ -886,7 +916,7 @@
 									</fieldset>
 									<div>
 										<label for="biggestChallenges" class="block text-sm font-medium text-gray-700">
-											What is your biggest challenge in managing your business?
+											{t('form', 'managing_bookings')}
 										</label>
 										<textarea
 											id="biggestChallenges"
@@ -894,10 +924,10 @@
 											bind:value={formData.biggestChallenges}
 											rows="4"
 											class="block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm transition-all focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
-											placeholder="e.g., managing travel, client communication..."
+											placeholder={t('form', 'managing_bookings_placeholder')}
 										></textarea>
 										<p class="mt-1 text-xs text-gray-500">
-											Share any challenges you encounter (optional).
+											{t('form', 'managing_bookings_optional')}
 										</p>
 									</div>
 								</div>
