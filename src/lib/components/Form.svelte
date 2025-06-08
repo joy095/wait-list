@@ -703,5 +703,4 @@
 
 <style>
 	/* Basic styling for demonstration, adjust as needed */
-	
 </style>
