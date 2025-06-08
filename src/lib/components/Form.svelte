@@ -829,11 +829,13 @@
 											<option value="yes_10_percent"
 												>{t('form', 'discounts_subscriptions_1')}</option
 											>
-											<option value="yes_20_percent">Yes, discounts up to 20%</option>
-											<option value="yes_subscriptions"
+											<option value="yes_20_percent"
 												>{t('form', 'discounts_subscriptions_2')}</option
 											>
-											<option value="no">{t('form', 'discounts_subscriptions_3')}</option>
+											<option value="yes_subscriptions"
+												>{t('form', 'discounts_subscriptions_3')}</option
+											>
+											<option value="no">{t('form', 'discounts_subscriptions_4')}</option>
 										</select>
 										{#if formErrors.offerDiscounts}
 											<p id="offerDiscounts-error" class="mt-1 text-xs text-red-600">

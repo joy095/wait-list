@@ -1,11 +1,21 @@
 <script lang="ts">
-	import Icon from '@iconify/svelte';
 	import { quintOut } from 'svelte/easing';
 	import { fly, fade } from 'svelte/transition';
 	// Ensure this path is correct based on where you placed inView.ts
 	// If it's in src/actions, use '$lib/actions/inView'
 	// If it's directly in src, you might need '../actions/inView' or similar
 	import { inView } from '$lib/actions/inView';
+
+	import type { Writable } from 'svelte/store';
+	import { getContext } from 'svelte';
+
+	// Your existing I18n context logic...
+	interface I18nContext {
+		t: (namespace: string, key: string, options?: Record<string, unknown>) => string;
+		changeLanguage: (lang: string) => void;
+		currentLanguage: Writable<string>;
+	}
+	const { t } = getContext<I18nContext>('i18n');
 
 	// --- Data for sections (defined once in this page component) ---
 	const values = [
@@ -156,20 +166,15 @@
 				>
 					<div class="flex w-full flex-col items-center justify-center text-center md:w-1/2">
 						<h2 class="mb-2 text-3xl font-bold text-purple-700 uppercase md:text-4xl">
-							Contact Us
+							{t('contact', 'contact_heading')}
 						</h2>
 						<p class="mb-6 px-4 text-gray-600">
-							Or reach out manually to
+							{t('contact', 'reach_out')}
+
 							<a
 								href="mailto:joykarmakar852@gmail.com"
 								class="text-purple-600 transition-colors duration-200 hover:text-purple-800 hover:underline"
 								>joykarmakar852@gmail.com</a
-							>
-							<br />
-							<a
-								href="tel:916295511263"
-								class="text-purple-600 transition-colors duration-200 hover:text-purple-800 hover:underline"
-								>+91 62955 11263</a
 							>
 						</p>
 						<img
@@ -182,9 +187,9 @@
 					<div class="w-full md:w-1/2">
 						<form on:submit|preventDefault={handleSubmit}>
 							<div class="mb-5">
-								<label for="uf-imail" class="mb-2 block text-sm font-medium text-gray-700"
-									>Email address</label
-								>
+								<label for="uf-imail" class="mb-2 block text-sm font-medium text-gray-700">
+									{t('contact', 'email')}
+								</label>
 								<input
 									type="email"
 									class="w-full rounded-lg border border-gray-300 p-3 transition duration-200 outline-none focus:ring-2 focus:ring-purple-500 focus:outline-none {emailError
@@ -192,7 +197,7 @@
 										: ''}"
 									id="uf-imail"
 									aria-describedby="emailHelp"
-									placeholder="you@email.com"
+									placeholder={t('contact', 'email_placeholder')}
 									bind:value={email}
 									on:input={() => (emailError = '')}
 								/>
@@ -202,14 +207,14 @@
 									</p>
 								{/if}
 								<p id="emailHelp" class="mt-2 text-sm text-purple-600">
-									We'll never share your email with anyone else.
+									{t('contact', 'privacy')}
 								</p>
 							</div>
 
 							<div class="mb-5">
-								<label for="uf-iname" class="mb-2 block text-sm font-medium text-gray-700"
-									>Your name</label
-								>
+								<label for="uf-iname" class="mb-2 block text-sm font-medium text-gray-700">
+									{t('contact', 'name')}
+								</label>
 								<input
 									type="text"
 									class="w-full rounded-lg border border-gray-300 p-3 transition duration-200 outline-none focus:ring-2 focus:ring-purple-500 focus:outline-none {nameError
@@ -228,16 +233,16 @@
 							</div>
 
 							<div class="mb-6">
-								<label for="uf-itextarea" class="mb-2 block text-sm font-medium text-gray-700"
-									>Your message</label
-								>
+								<label for="uf-itextarea" class="mb-2 block text-sm font-medium text-gray-700">
+									{t('contact', 'message')}
+								</label>
 								<textarea
 									class="min-h-[100px] w-full resize-y rounded-lg border border-gray-300 p-3 transition duration-200 outline-none focus:ring-2 focus:ring-purple-500 focus:outline-none {messageError
 										? 'border-red-500'
 										: ''}"
 									id="uf-itextarea"
 									rows="4"
-									placeholder="Your message here..."
+									placeholder={t('contact', 'message_placeholder')}
 									bind:value={message}
 									on:input={() => (messageError = '')}
 								></textarea>
@@ -265,9 +270,9 @@
 								disabled={isSubmitting}
 							>
 								{#if isSubmitting}
-									Sending...
+									{t('contact', 'submitting_btn')}
 								{:else}
-									Send Message
+									{t('contact', 'submit_btn')}
 								{/if}
 							</button>
 						</form>

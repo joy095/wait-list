@@ -1,0 +1,13 @@
+{
+	"contact_heading": "हमसे संपर्क करें",
+	"reach_out": "या मैन्युअल रूप से संपर्क करें",
+	"email": "ईमेल पता",
+	"email_placeholder": "you@email.com",
+	"privacy": "हम आपका ईमेल किसी और के साथ कभी साझा नहीं करेंगे.",
+	"name": "आपका नाम",
+	"name_placeholder": "जॉन डो",
+	"message": "आपका संदेश",
+	"message_placeholder": "आपका संदेश यहाँ...",
+	"submit_btn": "संदेश भेजें",
+	"submitting_btn": "भेजा जा रहा है..."
+}
