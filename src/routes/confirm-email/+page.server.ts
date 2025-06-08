@@ -23,7 +23,7 @@ export const load = async ({ url }) => {
     try {
         // Find user by token and check expiry
         const result = await db.query(
-            `SELECT id, email, email_verified, token_expires_at, subscription_status FROM users WHERE verification_token = $1;`,
+            `SELECT id, email, email_verified, token_expires_at, subscription_status FROM tests WHERE verification_token = $1;`,
             [token]
         );
 

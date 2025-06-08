@@ -1,105 +1,123 @@
 // src/routes/+page.server.ts
 
 import { fail } from '@sveltejs/kit';
-import { z } from 'zod'; // A powerful library for schema validation
+import { z } from 'zod';
 import { randomBytes } from 'crypto';
 import db from '$lib/server/db'; // Assuming your db connection setup
 import { sendConfirmationEmail } from '$lib/server/email'; // Your email sending utility
-import i18n from '$lib/i18n';
 
-// Define a schema for your form data for robust validation
-const formSchema = z.object({
+// Base schema with common fields
+const baseSchema = z.object({
     firstName: z.string().trim().min(1, { message: 'First name is required.' }),
     lastName: z.string().trim().min(1, { message: 'Last name is required.' }),
-    email: z.string().trim().email({ message: 'Please enter a valid email address.' }),
-    favoriteColor: z.string().min(1, { message: 'Favorite color is required.' }),
-    satisfactionLevel: z.coerce.number().min(1).max(10), // Coerce to number
-    feedbackNotes: z.string().optional()
+    email: z.string().trim().email({ message: 'A valid email is required.' }),
 });
 
+// Zod schema for the form data using a discriminated union
+const formSchema = z.discriminatedUnion("userType", [
+    // Schema for Barber Customers
+    baseSchema.extend({
+        userType: z.literal("customer_barber"),
+        visitFrequency: z.string({ required_error: "Please select your visit frequency." }),
+        barberServices: z.array(z.string()).min(1, "Please select at least one service."),
+        importantFactors: z.array(z.string()).min(1, "Please select at least one factor."),
+        bookingFrustrations: z.string().optional(),
+    }),
+    // Schema for Makeup Customers
+    baseSchema.extend({
+        userType: z.literal("customer_makeup"),
+        makeupOccasions: z.array(z.string()).min(1, "Please select at least one occasion."),
+        importantFactors: z.array(z.string()).min(1, "Please select at least one factor."),
+        bookingFrustrations: z.string().optional(),
+    }),
+    // Schema for Barber Shop Owners
+    baseSchema.extend({
+        userType: z.literal("owner_barber"),
+        commissionPreference: z.string({ required_error: "Please select your commission preference." }),
+        offerDiscounts: z.string({ required_error: "Please indicate your interest in discounts." }),
+        biggestChallenges: z.string().optional(),
+    }),
+    // Schema for Makeup Artists/Owners
+    baseSchema.extend({
+        userType: z.literal("owner_makeup"),
+        commissionPreference: z.string({ required_error: "Please select your commission preference." }),
+        portfolioInterest: z.string({ required_error: "Please indicate your interest in portfolio features." }),
+        biggestChallenges: z.string().optional(),
+    }),
+    // Schema for "Other"
+    baseSchema.extend({
+        userType: z.literal("other"),
+        otherDescription: z.string().min(1, "Please specify your role.")
+    })
+]);
+
+
 export const actions = {
-    /**
-     * Handles the form submission, validation, and user subscription logic.
-     */
     submitForm: async ({ request }) => {
         const formData = await request.formData();
-        const data = Object.fromEntries(formData);
+        const data = {
+            ...Object.fromEntries(formData),
+            barberServices: formData.getAll('barberServices'),
+            makeupOccasions: formData.getAll('makeupOccasions'),
+            importantFactors: formData.getAll('importantFactors')
+        };
 
-        // 1. Validate the form data against the schema
         const validated = formSchema.safeParse(data);
 
         if (!validated.success) {
-            // If validation fails, return a 400 Bad Request with the error messages
-            const errors = validated.error.flatten().fieldErrors;
-            // Return the first error message found
-            const firstError = Object.values(errors).flat()[0] || 'Invalid data provided.';
-            return fail(400, { message: firstError });
+            const firstError = Object.values(validated.error.flatten().fieldErrors).flat()[0] || 'Invalid data.';
+            return fail(400, { message: firstError, data });
         }
 
-        const { email, firstName, lastName, favoriteColor, satisfactionLevel, feedbackNotes } = validated.data;
+        const { firstName, lastName, email, userType } = validated.data;
 
         try {
-            // 2. Check if the user is already subscribed
-            const existingUserResult = await db.query(
-                'SELECT email, subscription_status, email_verified FROM users WHERE email = $1',
-                [email]
-            );
-
-            const existingUser = existingUserResult.rows[0];
-
-            if (existingUser) {
-                // If user exists and is fully subscribed, return a conflict error
-                if (existingUser.subscription_status === 'subscribed' && existingUser.email_verified) {
-                    return fail(409, { message: 'This email is already subscribed. Thank you!' });
-                }
-
-                // (Optional but recommended) If user exists but hasn't confirmed their email yet,
-                // resend the confirmation email instead of creating a new user.
-                // For this example, we will just inform them.
-                if (!existingUser.email_verified) {
-                    return fail(409, { message: 'You have already signed up. Please check your email to confirm your subscription.' });
-                }
+            // Check for existing user (simplified from your original code)
+            const existingUser = await db.query('SELECT email FROM tests WHERE email = $1', [email]);
+            if (existingUser.rows.length > 0) {
+                return fail(409, { message: 'This email is already registered. Thank you!' });
             }
 
-            // 3. Create a new user record with a pending status
             const verificationToken = randomBytes(32).toString('hex');
-            const tokenExpiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000); // Token valid for 24 hours
+            const tokenExpiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
 
-            await db.query(
-                `INSERT INTO users (first_name, last_name, email, favorite_color, satisfaction_level, feedback_notes, verification_token, token_expires_at, subscription_status)
-                 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, 'pending')`,
-                [firstName, lastName, email, favoriteColor, satisfactionLevel, feedbackNotes, verificationToken, tokenExpiresAt]
-            );
+            // Insert data based on user type
+            if (userType === 'customer_barber') {
+                const { visitFrequency, barberServices, importantFactors, bookingFrustrations } = validated.data;
+                await db.query(
+                    `INSERT INTO tests (first_name, last_name, email, user_type, visit_frequency, barber_services, barber_choice_factors, booking_frustrations, verification_token, token_expires_at)
+                     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`,
+                    [firstName, lastName, email, userType, visitFrequency, barberServices, importantFactors, bookingFrustrations, verificationToken, tokenExpiresAt]
+                );
+            } else if (userType === 'customer_makeup') {
+                const { makeupOccasions, importantFactors, bookingFrustrations } = validated.data;
+                await db.query(
+                    `INSERT INTO tests (first_name, last_name, email, user_type, makeup_occasions, makeup_artist_choice_factors, booking_frustrations, verification_token, token_expires_at)
+                     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
+                    [firstName, lastName, email, userType, makeupOccasions, importantFactors, bookingFrustrations, verificationToken, tokenExpiresAt]
+                );
+            } else if (userType === 'owner_barber' || userType === 'owner_makeup') {
+                const { commissionPreference, biggestChallenges } = validated.data;
+                let discountInterest = null;
+                let portfolioInterest = null;
+                if ('offerDiscounts' in validated.data) discountInterest = validated.data.offerDiscounts;
+                if ('portfolioInterest' in validated.data) portfolioInterest = validated.data.portfolioInterest;
 
-            // 4. Send the confirmation email
-            await sendConfirmationEmail({
-                to: email,
-                name: firstName,
-                token: verificationToken
-            });
+                await db.query(
+                    `INSERT INTO tests (first_name, last_name, email, user_type, commission_preference, discount_interest, portfolio_interest, biggest_challenges, verification_token, token_expires_at)
+                     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`,
+                    [firstName, lastName, email, userType, commissionPreference, discountInterest, portfolioInterest, biggestChallenges, verificationToken, tokenExpiresAt]
+                );
+            }
+            // Add other 'else if' blocks for other user types as needed
 
-            // 5. Return a success message
-            return {
-                type: 'success',
-                message: 'Great! Please check your email to confirm your subscription.'
-            };
+            await sendConfirmationEmail({ to: email, name: firstName, token: verificationToken });
+
+            return { type: 'success' };
 
         } catch (error) {
             console.error('Form submission error:', error);
-            // Return a generic server error message
-            return fail(500, { message: 'An internal server error occurred. Please try again later.' });
+            return fail(500, { message: 'An internal server error occurred. Please try again.' });
         }
     }
-};
-
-
-export const load = async ({ url }) => {
-    const lang = url.searchParams.get('lang') ?? 'en';
-    // set language in your i18n store here
-    // example:
-    i18n.changeLanguage(lang);
-
-    return {
-        lang
-    };
 };
