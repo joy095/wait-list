@@ -1,10 +1,8 @@
-// src/routes/+page.server.ts
-
 import { fail } from '@sveltejs/kit';
 import { z } from 'zod';
 import { randomBytes } from 'crypto';
-import db from '$lib/server/db'; // Assuming your db connection setup
-import { sendConfirmationEmail } from '$lib/server/email'; // Your email sending utility
+import db from '$lib/server/db';
+import { sendConfirmationEmail } from '$lib/server/email';
 
 // Base schema with common fields
 const baseSchema = z.object({
@@ -22,6 +20,7 @@ const formSchema = z.discriminatedUnion("userType", [
         barberServices: z.array(z.string()).min(1, "Please select at least one service."),
         importantFactors: z.array(z.string()).min(1, "Please select at least one factor."),
         bookingFrustrations: z.string().optional(),
+        generalMessage: z.string().optional(),
     }),
     // Schema for Makeup Customers
     baseSchema.extend({
@@ -29,6 +28,7 @@ const formSchema = z.discriminatedUnion("userType", [
         makeupOccasions: z.array(z.string()).min(1, "Please select at least one occasion."),
         importantFactors: z.array(z.string()).min(1, "Please select at least one factor."),
         bookingFrustrations: z.string().optional(),
+        generalMessage: z.string().optional(),
     }),
     // Schema for Barber Shop Owners
     baseSchema.extend({
@@ -51,7 +51,6 @@ const formSchema = z.discriminatedUnion("userType", [
     })
 ]);
 
-
 export const actions = {
     submitForm: async ({ request }) => {
         const formData = await request.formData();
@@ -59,7 +58,7 @@ export const actions = {
             ...Object.fromEntries(formData),
             barberServices: formData.getAll('barberServices'),
             makeupOccasions: formData.getAll('makeupOccasions'),
-            importantFactors: formData.getAll('importantFactors')
+            importantFactors: formData.getAll('importantFactors'),
         };
 
         const validated = formSchema.safeParse(data);
@@ -72,8 +71,8 @@ export const actions = {
         const { firstName, lastName, email, userType } = validated.data;
 
         try {
-            // Check for existing user (simplified from your original code)
-            const existingUser = await db.query('SELECT email FROM tests WHERE email = $1', [email]);
+            // Check for existing user
+            const existingUser = await db.query('SELECT email FROM users WHERE email = $1', [email]);
             if (existingUser.rows.length > 0) {
                 return fail(409, { message: 'This email is already registered. Thank you!' });
             }
@@ -83,33 +82,41 @@ export const actions = {
 
             // Insert data based on user type
             if (userType === 'customer_barber') {
-                const { visitFrequency, barberServices, importantFactors, bookingFrustrations } = validated.data;
+                const { visitFrequency, barberServices, importantFactors, bookingFrustrations, generalMessage } = validated.data;
                 await db.query(
-                    `INSERT INTO tests (first_name, last_name, email, user_type, visit_frequency, barber_services, barber_choice_factors, booking_frustrations, verification_token, token_expires_at)
-                     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`,
-                    [firstName, lastName, email, userType, visitFrequency, barberServices, importantFactors, bookingFrustrations, verificationToken, tokenExpiresAt]
+                    `INSERT INTO users (first_name, last_name, email, user_type, visit_frequency, barber_services, barber_choice_factors, booking_frustrations, general_message, verification_token, token_expires_at)
+                     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)`,
+                    [firstName, lastName, email, userType, visitFrequency, barberServices, importantFactors, bookingFrustrations, generalMessage, verificationToken, tokenExpiresAt]
                 );
             } else if (userType === 'customer_makeup') {
-                const { makeupOccasions, importantFactors, bookingFrustrations } = validated.data;
+                const { makeupOccasions, importantFactors, bookingFrustrations, generalMessage } = validated.data;
                 await db.query(
-                    `INSERT INTO tests (first_name, last_name, email, user_type, makeup_occasions, makeup_artist_choice_factors, booking_frustrations, verification_token, token_expires_at)
-                     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
-                    [firstName, lastName, email, userType, makeupOccasions, importantFactors, bookingFrustrations, verificationToken, tokenExpiresAt]
-                );
-            } else if (userType === 'owner_barber' || userType === 'owner_makeup') {
-                const { commissionPreference, biggestChallenges } = validated.data;
-                let discountInterest = null;
-                let portfolioInterest = null;
-                if ('offerDiscounts' in validated.data) discountInterest = validated.data.offerDiscounts;
-                if ('portfolioInterest' in validated.data) portfolioInterest = validated.data.portfolioInterest;
-
-                await db.query(
-                    `INSERT INTO tests (first_name, last_name, email, user_type, commission_preference, discount_interest, portfolio_interest, biggest_challenges, verification_token, token_expires_at)
+                    `INSERT INTO users (first_name, last_name, email, user_type, makeup_occasions, makeup_artist_choice_factors, booking_frustrations, general_message, verification_token, token_expires_at)
                      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`,
-                    [firstName, lastName, email, userType, commissionPreference, discountInterest, portfolioInterest, biggestChallenges, verificationToken, tokenExpiresAt]
+                    [firstName, lastName, email, userType, makeupOccasions, importantFactors, bookingFrustrations, generalMessage, verificationToken, tokenExpiresAt]
+                );
+            } else if (userType === 'owner_barber') {
+                const { commissionPreference, offerDiscounts, biggestChallenges } = validated.data;
+                await db.query(
+                    `INSERT INTO users (first_name, last_name, email, user_type, commission_preference, discount_interest, biggest_challenges, verification_token, token_expires_at)
+                     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
+                    [firstName, lastName, email, userType, commissionPreference, offerDiscounts, biggestChallenges, verificationToken, tokenExpiresAt]
+                );
+            } else if (userType === 'owner_makeup') {
+                const { commissionPreference, portfolioInterest, biggestChallenges } = validated.data;
+                await db.query(
+                    `INSERT INTO users (first_name, last_name, email, user_type, commission_preference, portfolio_interest, biggest_challenges, verification_token, token_expires_at)
+                     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
+                    [firstName, lastName, email, userType, commissionPreference, portfolioInterest, biggestChallenges, verificationToken, tokenExpiresAt]
+                );
+            } else if (userType === 'other') {
+                const { otherDescription } = validated.data;
+                await db.query(
+                    `INSERT INTO users (first_name, last_name, email, user_type, other_description, verification_token, token_expires_at)
+                     VALUES ($1, $2, $3, $4, $5, $6, $7)`,
+                    [firstName, lastName, email, userType, otherDescription, verificationToken, tokenExpiresAt]
                 );
             }
-            // Add other 'else if' blocks for other user types as needed
 
             await sendConfirmationEmail({ to: email, name: firstName, token: verificationToken });
 

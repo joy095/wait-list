@@ -23,7 +23,7 @@ export const load = async ({ url }) => {
     try {
         // Find user by token and check expiry
         const result = await db.query(
-            `SELECT id, email, email_verified, token_expires_at, subscription_status FROM tests WHERE verification_token = $1;`,
+            `SELECT id, email, email_verified, token_expires_at, subscription_status FROM users WHERE verification_token = $1;`,
             [token]
         );
 
@@ -44,9 +44,9 @@ export const load = async ({ url }) => {
         }
 
         // Verify the user's email and set subscription status to 'subscribed'
-        // CHANGED 'users' to 'tests' in the UPDATE query
+        // CHANGED 'users' to 'users' in the UPDATE query
         await db.query(
-            `UPDATE tests SET email_verified = TRUE, verification_token = NULL, token_expires_at = NULL, subscription_status = 'subscribed' WHERE id = $1;`,
+            `UPDATE users SET email_verified = TRUE, verification_token = NULL, token_expires_at = NULL, subscription_status = 'subscribed' WHERE id = $1;`,
             [user.id]
         );
 

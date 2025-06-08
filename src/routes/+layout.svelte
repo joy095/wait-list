@@ -122,23 +122,4 @@
 		padding: 0;
 		font-family: 'Inter', sans-serif;
 	}
-
-	.label-style {
-		@apply mb-1 block text-sm font-medium text-gray-700;
-	}
-	.input-style {
-		@apply mt-1 rounded-md border border-gray-300 p-2 focus:border-blue-500 focus:ring-blue-500;
-	}
-	.btn-primary {
-		@apply rounded-lg bg-blue-600 px-6 py-3 font-semibold text-white shadow-md transition duration-150 ease-in-out hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none;
-	}
-	.btn-secondary {
-		@apply rounded-lg border border-gray-300 px-6 py-3 font-semibold text-gray-700 shadow-sm transition duration-150 ease-in-out hover:bg-gray-50 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:outline-none;
-	}
-	.btn-submit {
-		@apply rounded-lg bg-purple-600 px-6 py-3 font-semibold text-white shadow-md transition duration-150 ease-in-out hover:bg-purple-700 focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:outline-none;
-	}
-	.btn-submit:disabled {
-		@apply cursor-not-allowed opacity-50;
-	}
 </style>
