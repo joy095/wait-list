@@ -211,7 +211,7 @@
 		<div class="hidden items-center space-x-4 md:flex">
 			<div class="group relative">
 				<button
-					class="flex items-center space-x-2 rounded-full border border-gray-200 bg-white px-3 py-1.5 text-sm font-medium text-gray-600 hover:bg-gray-50 focus:ring-2 focus:ring-purple-600 focus:outline-none"
+					class="flex cursor-pointer items-center space-x-2 rounded-full border border-gray-200 bg-white px-3 py-1.5 text-sm font-medium text-gray-600 hover:bg-gray-50 focus:ring-2 focus:ring-purple-600 focus:outline-none"
 					aria-haspopup="listbox"
 					aria-expanded={mobileMenuOpen}
 					on:click={() => (mobileMenuOpen = !mobileMenuOpen)}
@@ -277,7 +277,7 @@
 
 			<button
 				on:click={openSubscribeForm}
-				class="rounded-full bg-gradient-to-r from-purple-600 to-blue-600 px-5 py-2 text-sm font-semibold text-white shadow-md transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg"
+				class="cursor-pointer rounded-full bg-gradient-to-r from-purple-600 to-blue-600 px-5 py-2 text-sm font-semibold text-white shadow-md transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg"
 			>
 				{t('common', 'get_notified_btn') || 'Get Notified'}
 			</button>
@@ -368,7 +368,7 @@
 				</div>
 				<button
 					on:click={openSubscribeForm}
-					class="w-full rounded-lg bg-gradient-to-r from-purple-600 to-blue-600 px-5 py-2.5 text-sm font-semibold text-white shadow-md transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg"
+					class="w-full cursor-pointer rounded-lg bg-gradient-to-r from-purple-600 to-blue-600 px-5 py-2.5 text-sm font-semibold text-white shadow-md transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg"
 				>
 					{t('common', 'get_notified_btn') || 'Get Notified'}
 				</button>

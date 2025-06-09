@@ -117,11 +117,9 @@
 	}
 </script>
 
-<div
-	class="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800"
->
+<div class="min-h-screen bg-gray-50">
 	<section
-		class="flex min-h-screen items-center justify-center bg-gray-50 p-4"
+		class="flex min-h-screen items-center justify-center p-4"
 		use:inView={{ threshold: 0.2 }}
 		on:inview={() => (contactFormVisible = true)}
 	>
@@ -234,7 +232,7 @@
 
 							<button
 								type="submit"
-								class="focus:ring-opacity-75 w-full rounded-lg bg-purple-600 px-6 py-3 font-semibold text-white shadow-md transition duration-300 hover:bg-purple-700 focus:ring-2 focus:ring-purple-500 focus:outline-none"
+								class="focus:ring-opacity-75 w-full cursor-pointer rounded-lg bg-purple-600 px-6 py-3 font-semibold text-white shadow-md transition duration-300 hover:bg-purple-700 focus:ring-2 focus:ring-purple-500 focus:outline-none"
 								disabled={isSubmitting}
 							>
 								{#if isSubmitting}
