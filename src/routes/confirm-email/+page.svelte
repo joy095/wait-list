@@ -16,7 +16,7 @@
 	// SEO and sharing metadata
 	const pageTitle = 'Email Confirmation - Wait list Signup';
 	const pageDescription = 'Confirm your email and share this page with your network!';
-	const pageImage = `${baseUrl}/wait-list.webp`;
+	const pageImage = '/wait-list.webp';
 
 	// Copy base URL to clipboard
 	function copyToClipboard() {
