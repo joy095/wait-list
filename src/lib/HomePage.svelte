@@ -50,9 +50,7 @@
 </script>
 
 <div class="bg-background text-text relative min-h-screen overflow-hidden">
-	<div
-		class="background-gradient absolute inset-0 bg-gradient-to-br from-purple-600/20 to-blue-600/20"
-	></div>
+	<div class="background-gradient absolute inset-0 bg-gray-50 bg-gradient-to-br"></div>
 
 	<section class="hero relative z-10 flex min-h-screen items-center justify-center px-4">
 		<div class="max-w-4xl text-center">

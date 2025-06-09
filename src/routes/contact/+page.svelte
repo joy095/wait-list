@@ -121,7 +121,7 @@
 	class="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800"
 >
 	<section
-		class="flex min-h-screen items-center justify-center bg-purple-500 p-4"
+		class="flex min-h-screen items-center justify-center bg-gray-50 p-4"
 		use:inView={{ threshold: 0.2 }}
 		on:inview={() => (contactFormVisible = true)}
 	>
@@ -158,6 +158,7 @@
 								</label>
 								<input
 									type="email"
+									autocomplete="off"
 									class="w-full rounded-lg border border-gray-300 p-3 transition duration-200 outline-none focus:ring-2 focus:ring-purple-500 focus:outline-none {emailError
 										? 'border-red-500'
 										: ''}"
@@ -183,6 +184,7 @@
 								</label>
 								<input
 									type="text"
+									autocomplete="off"
 									class="w-full rounded-lg border border-gray-300 p-3 transition duration-200 outline-none focus:ring-2 focus:ring-purple-500 focus:outline-none {nameError
 										? 'border-red-500'
 										: ''}"
