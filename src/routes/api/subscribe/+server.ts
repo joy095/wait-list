@@ -67,7 +67,7 @@ const getClientIp = (request: Request): string => {
     return realIp || remoteAddr;
 };
 
-export const POST: warden: RequestHandler = async ({ request }): Promise<Response> => {
+export const POST: RequestHandler = async ({ request }): Promise<Response> => {
     logger.debug('[API] Starting subscription request');
 
     let requestBody: SubscriptionRequestBody;

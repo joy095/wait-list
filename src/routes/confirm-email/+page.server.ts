@@ -1,144 +1,63 @@
-import { json } from '@sveltejs/kit';
-import type { RequestHandler } from './$types';
-import type { SubscriptionRequestBody } from '$lib/types';
+// src/routes/confirm-email/+page.server.ts
 import db from '$lib/server/db';
-import { v4 as uuidv4 } from 'uuid';
-import { sendConfirmationEmail } from '$lib/server/email';
+import { error, redirect } from '@sveltejs/kit';
 
-// Custom rate limiting function
-const checkRateLimit = async (clientIp: string): Promise<{ allowed: boolean; retryAfter?: number }> => {
-    const windowSeconds = 3600; // 1 hour
-    const limitPerWindow = 1;
-    const now = new Date();
+export const load = async ({ url }) => {
+    const token = url.searchParams.get('token');
+    const statusParam = url.searchParams.get('status');
+
+    // If there's a status param, it means we're coming from a redirect (already handled)
+    // We just return the status to the client-side component to display.
+    if (statusParam) {
+        return {
+            status: statusParam,
+            message: null // Message will be set by the client-side component based on status
+        };
+    }
+
+    // If no status param, then we expect a token for verification
+    if (!token) {
+        error(400, 'Verification token is missing. Please check your email for the correct link.');
+    }
 
     try {
-        // Get or create rate limit record
+        // Find user by token and check expiry
         const result = await db.query(
-            `INSERT INTO rate_limits (key, count, last_reset, window_seconds, limit_per_window, updated_at)
-             VALUES ($1, 1, $2, $3, $4, $2)
-             ON CONFLICT (key) DO UPDATE SET
-                 count = CASE
-                     WHEN rate_limits.last_reset + INTERVAL '1 second' * rate_limits.window_seconds <= $2
-                     THEN 1
-                     ELSE rate_limits.count + 1
-                 END,
-                 last_reset = CASE
-                     WHEN rate_limits.last_reset + INTERVAL '1 second' * rate_limits.window_seconds <= $2
-                     THEN $2
-                     ELSE rate_limits.last_reset
-                 END,
-                 updated_at = $2
-             RETURNING count, last_reset, window_seconds, limit_per_window`,
-            [clientIp, now, windowSeconds, limitPerWindow]
+            `SELECT id, email, email_verified, token_expires_at, subscription_status FROM users WHERE verification_token = $1;`,
+            [token]
         );
 
-        if (result.rows[0]) {
-            const { count, last_reset, window_seconds, limit_per_window } = result.rows[0];
+        const user = result.rows[0];
 
-            if (count > limit_per_window) {
-                const resetTime = new Date(last_reset.getTime() + (window_seconds * 1000));
-                const retryAfter = Math.ceil((resetTime.getTime() - now.getTime()) / 1000);
-                return { allowed: false, retryAfter: Math.max(retryAfter, 60) };
-            }
+        if (!user) {
+            error(404, 'Invalid verification token. It might be incorrect or already used.');
         }
 
-        return { allowed: true };
-    } catch (error) {
-        console.error('[API] Rate limit check error:', error);
-        // If rate limiting fails, allow the request to proceed
-        return { allowed: true };
-    }
-};
+        if (user.email_verified && user.subscription_status === 'subscribed') {
+            // Already verified and subscribed, redirect to an "already verified" state
+            redirect(303, '/confirm-email?status=already_subscribed');
+        }
 
-const getClientIp = (request: Request): string => {
-    const forwarded = request.headers.get('x-forwarded-for') || '127.0.0.1';
-    const realIp = request.headers.get('x-real-ip');
-    if (forwarded) {
-        const ips = forwarded.split(',').map(ip => ip.trim());
-        return ips[0];
-    }
-    return realIp || request.headers.get('remote-addr') || 'unknown';
-};
+        if (user.token_expires_at && new Date() > new Date(user.token_expires_at)) {
+            // Token expired, redirect to an "expired" state
+            error(400, 'Verification link has expired. Please sign up again to receive a new link.');
+        }
 
-export const POST: RequestHandler = async ({ request }) => {
-    console.log('[API] Starting subscription request');
-
-    let requestBody: SubscriptionRequestBody;
-    const clientIp = getClientIp(request);
-    console.log(`[API] Request from IP: ${clientIp}`);
-
-    try {
-        requestBody = await request.json();
-    } catch (err) {
-        console.error('[API] Failed to parse request body:', err);
-        return json({ message: 'Invalid request body format.' }, { status: 400 });
-    }
-
-    const { email, name, phone, addressCity, addressState, message } = requestBody;
-    if (!email) return json({ message: 'Email address is required.' }, { status: 400 });
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return json({ message: 'Please enter a valid email address format.' }, { status: 400 });
-    if (!name || !addressCity || !addressState) return json({ message: 'Name, City, and State are required.' }, { status: 400 });
-
-    // Check rate limit
-    const rateLimitResult = await checkRateLimit(clientIp);
-    if (!rateLimitResult.allowed) {
-        const retryMinutes = Math.ceil((rateLimitResult.retryAfter || 60) / 60);
-        return json({
-            message: `Too many attempts. Please try again in ${retryMinutes} minutes.`,
-            retryAfter: rateLimitResult.retryAfter
-        }, {
-            status: 429,
-            headers: {
-                'Retry-After': (rateLimitResult.retryAfter || 60).toString()
-            }
-        });
-    }
-
-    try {
-        const token = uuidv4();
-        const result = await db.query(
-            `INSERT INTO users(
-          email, status, confirmation_token,
-          name, phone, address_city, address_state, message
-      )
-      VALUES($1, 'pending', $2, $3, $4, $5, $6, $7)
-      ON CONFLICT (email) DO UPDATE SET
-          confirmation_token = EXCLUDED.confirmation_token,
-          status = CASE
-              WHEN users.status = 'unsubscribed' THEN 'pending'
-              ELSE users.status
-          END,
-          name = EXCLUDED.name,
-          phone = EXCLUDED.phone,
-          address_city = EXCLUDED.address_city,
-          address_state = EXCLUDED.address_state,
-          message = EXCLUDED.message,
-          updated_at = NOW()
-      RETURNING id, status, email`,
-            [email, token, name, phone, addressCity, addressState, message]
+        // Verify the user's email and set subscription status to 'subscribed'
+        // CHANGED 'users' to 'users' in the UPDATE query
+        await db.query(
+            `UPDATE users SET email_verified = TRUE, verification_token = NULL, token_expires_at = NULL, subscription_status = 'subscribed' WHERE id = $1;`,
+            [user.id]
         );
 
-        if (result.rowCount > 0) {
-            const { status: subscriberStatus, email: subscriberEmail } = result.rows[0];
-            if (subscriberStatus === 'confirmed') {
-                return json({ message: 'You are already subscribed and confirmed!' }, { status: 200 });
-            }
+        // Success: Redirect to a success state
+        redirect(303, '/confirm-email?status=success');
 
-            try {
-                await sendConfirmationEmail({ to: subscriberEmail, name, token });
-                return json({ message: 'Please check your email to confirm your subscription!' }, { status: 200 });
-            } catch (err) {
-                console.error('[API] Email send error:', err);
-                return json({
-                    message: "Subscription saved! Check your email or contact support if you don't receive confirmation."
-                }, { status: 200 });
-            }
-        }
-
-        console.error('[API] No rows returned from DB for users table:', email);
-        return json({ message: 'Subscription failed. Please try again.' }, { status: 500 });
-    } catch (dbError) {
-        console.error('[API] DB error inserting/updating user:', dbError);
-        return json({ message: 'Database error occurred. Please try again later.' }, { status: 500 });
+    } catch (err: any) {
+        console.error('Error during email confirmation:', err);
+        // If it's a SvelteKit `error` or `redirect`, re-throw it so SvelteKit handles it
+        if (err.status) throw err;
+        // For other unexpected errors
+        error(500, 'An unexpected server error occurred during email confirmation.');
     }
 };
