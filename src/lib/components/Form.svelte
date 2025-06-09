@@ -101,35 +101,36 @@
 		formErrors = {};
 		switch (currentStep) {
 			case 1:
-				if (!formData.firstName) formErrors.firstName = 'First name is required.';
-				if (!formData.lastName) formErrors.lastName = 'Last name is required.';
-				if (!formData.email) formErrors.email = 'Email is required.';
+				if (!formData.firstName) formErrors.firstName = t('form', 'first_name_error');
+				if (!formData.lastName) formErrors.lastName = t('form', 'last_name_error');
+				if (!formData.email) formErrors.email = t('form', 'email_error');
 				else if (!validateField('email')) formErrors.email = 'Invalid email format.';
-				if (!formData.userType) formErrors.userType = 'Please select a user type.';
+				if (!formData.userType) formErrors.userType = t('form', 'select_error');
 				return Object.keys(formErrors).length === 0;
 
 			case 2:
 				const { userType } = formData;
 				if (userType === 'customer_barber') {
-					if (!formData.visitFrequency) formErrors.visitFrequency = 'Please select a frequency.';
+					if (!formData.visitFrequency) formErrors.visitFrequency = t('form', 'visit_barber_error');
 					if (formData.barberServices.length === 0)
-						formErrors.barberServices = 'Please select at least one service.';
+						formErrors.barberServices = t('form', 'barber_services_error');
 					if (formData.importantFactors.length === 0)
-						formErrors.importantFactors = 'Please select at least one factor.';
+						formErrors.importantFactors = t('form', 'choosing_barber_error');
 				} else if (userType === 'customer_makeup') {
 					if (formData.makeupOccasions.length === 0)
 						formErrors.makeupOccasions = 'Please select at least one occasion.';
 					if (formData.importantFactors.length === 0)
-						formErrors.importantFactors = 'Please select at least one factor.';
+						formErrors.importantFactors = t('form', 'choosing_barber_error');
 				} else if (userType === 'owner_barber') {
 					if (!formData.commissionPreference)
-						formErrors.commissionPreference = 'Please select a preference.';
-					if (!formData.offerDiscounts) formErrors.offerDiscounts = 'Please select an option.';
+						formErrors.commissionPreference = t('form', 'charged_commission_error');
+					if (!formData.offerDiscounts)
+						formErrors.offerDiscounts = t('form', 'discounts_subscriptions_error');
 				} else if (userType === 'owner_makeup') {
 					if (!formData.commissionPreference)
-						formErrors.commissionPreference = 'Please select a preference.';
+						formErrors.commissionPreference = t('form', 'charged_commission_error');
 					if (!formData.portfolioInterest)
-						formErrors.portfolioInterest = 'Please select an option.';
+						formErrors.portfolioInterest = t('form', 'discounts_subscriptions_error');
 				}
 				return Object.keys(formErrors).length === 0;
 
@@ -271,7 +272,7 @@
 							></div>
 						</div>
 						<div class="mt-2 flex justify-between text-xs text-gray-600">
-							<span>Step {currentStep} of {totalSteps}</span>
+							<span></span>
 							<span class="font-medium">
 								{t('form', 'progress')}
 								{Math.round($progress * 100)}%</span
@@ -1152,6 +1153,3 @@
 		{/if}
 	</div>
 {/if}
-
-<style>
-</style>

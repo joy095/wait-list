@@ -10,6 +10,7 @@
 	import i18n, { initI18n, supportedLngs, currentLanguage, i18nContext } from '$lib/i18n';
 	import { page } from '$app/stores';
 	import { goto, invalidateAll } from '$app/navigation'; // Ensure invalidateAll is imported
+	import Form from '$lib/components/Form.svelte';
 
 	interface LayoutData {
 		i18n: {
@@ -102,9 +103,10 @@
 
 <Navbar />
 
-<main class="min-h-screen pt-[70px]">
+<main class="min-h-screen pt-[64px]">
 	{#if initialized}
 		{@render children()}
+		<Form />
 	{:else}
 		<div class="flex min-h-screen items-center justify-center bg-gray-100 text-gray-700">
 			Loading translations...

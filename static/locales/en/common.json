@@ -1,7 +1,5 @@
 {
 	"greeting": "Hello, {{name}}!",
-	"copyright": "© {{year}} Your Company Name. All rights reserved.",
-	"made_with_love": "Made with ❤️ by Our Team",
 	"terms_conditions": "Terms and Conditions",
 	"privacy_policy": "Privacy Policy",
 	"shipping_policy": "Shipping Policy",

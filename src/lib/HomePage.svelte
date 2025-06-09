@@ -1,133 +1,177 @@
 <script lang="ts">
-	import { fly } from 'svelte/transition';
-	import { quintOut } from 'svelte/easing';
-	import { inView } from '$lib/actions/inView';
-	import Icon from '@iconify/svelte';
-	import { getContext } from 'svelte';
-	import type { Writable } from 'svelte/store';
-	// Import the store
-	import { isFormOpen } from '$lib/store';
+	import { onMount } from 'svelte';
+	import { gsap } from 'gsap';
+	import { ScrollTrigger } from 'gsap/ScrollTrigger';
+	import Button from './components/Button.svelte';
+	import { isFormOpen } from '$lib/store'; // Assuming your store path is correct
 
-	// Your existing I18n context logic...
-	interface I18nContext {
-		t: (namespace: string, key: string, options?: Record<string, unknown>) => string;
-		changeLanguage: (lang: string) => void;
-		currentLanguage: Writable<string>;
-	}
-	const { t } = getContext<I18nContext>('i18n');
-
-	let heroVisible = false;
-	let featuresVisible = false;
-	let ctaVisible = false;
-
-	const features = [
-		{
-			icon: 'ph:rocket-launch-duotone',
-			titleKey: 'blazing_fast_title',
-			descriptionKey: 'blazing_fast_desc'
-		},
-		{
-			icon: 'ph:paint-brush-broad-duotone',
-			titleKey: 'stunning_design_title',
-			descriptionKey: 'stunning_design_desc'
-		},
-		{
-			icon: 'ph:shield-check-duotone',
-			titleKey: 'secure_reliable_title',
-			descriptionKey: 'secure_reliable_desc'
-		},
-		{
-			icon: 'ph:headset-duotone',
-			titleKey: 'dedicated_support_title',
-			descriptionKey: 'dedicated_support_desc'
-		}
-	];
+	gsap.registerPlugin(ScrollTrigger);
 
 	// Function to open the form by setting the store value to true
 	function openSubscribeForm() {
 		isFormOpen.set(true);
 	}
+
+	onMount(() => {
+		// Hero section animation
+		gsap.fromTo(
+			'.hero',
+			{ opacity: 0, y: 50 },
+			{ opacity: 1, y: 0, duration: 1.2, ease: 'power3.out' }
+		);
+
+		// General section animations with ScrollTrigger
+		gsap.utils.toArray<HTMLElement>('.section').forEach((section) => {
+			gsap.fromTo(
+				section,
+				{ opacity: 0, y: 30 },
+				{
+					opacity: 1,
+					y: 0,
+					duration: 1,
+					ease: 'power3.out',
+					stagger: 0.2,
+					scrollTrigger: {
+						trigger: section,
+						start: 'top 85%', // Start animation when top of section is 85% in viewport
+						toggleActions: 'play none none none' // Play animation once
+					}
+				}
+			);
+		});
+
+		// Background gradient animation
+		gsap.fromTo(
+			'.background-gradient',
+			{ opacity: 0 },
+			{ opacity: 0.3, duration: 2, ease: 'power2.inOut' }
+		);
+	});
 </script>
 
-<div class="font-inter min-h-screen bg-gray-50 text-gray-800 dark:bg-gray-900 dark:text-gray-200">
-	<section
-		class="relative flex h-screen flex-col items-center justify-center overflow-hidden bg-gradient-to-br from-blue-600 to-purple-700 p-4 text-white"
-		use:inView={{ threshold: 0.1 }}
-		on:inview={() => (heroVisible = true)}
-	>
-		{#if heroVisible}
-			<div class="z-10 text-center" in:fly={{ y: 50, duration: 1000, easing: quintOut }}>
-				<h1 class="mb-4 text-5xl leading-tight font-extrabold drop-shadow-lg md:text-7xl">
-					{t('home', 'home_page_title')}
-				</h1>
-				<p class="mx-auto mb-8 max-w-3xl text-xl opacity-90 md:text-2xl">
-					{t('home', 'welcome')} Your one-stop destination for everything you need to know and more.
-				</p>
-				<button
-					on:click={openSubscribeForm}
-					class="inline-block transform rounded-full bg-white px-8 py-3 font-bold text-purple-700 shadow-lg transition-all duration-300 hover:scale-105 hover:bg-gray-100"
-				>
-					Subscribe Now
-				</button>
-			</div>
-		{/if}
+<div class="bg-background text-text relative min-h-screen overflow-hidden">
+	<div
+		class="background-gradient absolute inset-0 bg-gradient-to-br from-purple-600/20 to-blue-600/20"
+	></div>
+
+	<section class="hero relative z-10 flex min-h-screen items-center justify-center px-4">
+		<div class="max-w-4xl text-center">
+			<h1 class="mb-6 text-4xl font-bold tracking-tight md:text-6xl">Step Into the Future</h1>
+			<p class="text-muted mx-auto mb-8 max-w-2xl text-lg md:text-xl">
+				Join our exclusive waitlist to experience a platform designed to inspire and innovate.
+			</p>
+			<Button onClick={openSubscribeForm}>Join the Waitlist</Button>
+		</div>
 	</section>
 
-	<section
-		class="bg-white px-4 py-20 md:px-8 lg:px-16 dark:bg-gray-800"
-		use:inView={{ threshold: 0.2 }}
-		on:inview={() => (featuresVisible = true)}
-	>
-		<div class="container mx-auto text-center">
-			<h2 class="mb-4 text-4xl font-bold text-gray-800 dark:text-white">
-				{t('home', 'why_choose_us')}
-			</h2>
-			<p class="mx-auto mb-12 max-w-3xl text-lg text-gray-600 dark:text-gray-300">
-				We combine creativity with technical expertise to deliver solutions that truly stand out.
-			</p>
-			<div class="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-4">
-				{#each features as feature, i}
-					{#if featuresVisible}
-						<div
-							class="flex transform cursor-pointer flex-col items-center rounded-xl bg-gray-100 p-6 text-center shadow-md transition-transform duration-300 hover:scale-105 hover:shadow-lg dark:bg-gray-700"
-							in:fly={{ y: 50, duration: 700, delay: i * 100, easing: quintOut }}
-						>
-							<div class="mb-4 text-5xl text-blue-600 dark:text-blue-400">
-								<Icon icon={feature.icon} width="50" height="50" />
-							</div>
-							<h3 class="mb-2 text-xl font-semibold text-gray-800 dark:text-white">
-								{t('home', feature.titleKey)}
-							</h3>
-							<p class="text-gray-600 dark:text-gray-300">
-								{t('home', feature.descriptionKey)}
-							</p>
-						</div>
-					{/if}
-				{/each}
+	<section class="section px-4 py-16">
+		<div class="mx-auto max-w-6xl">
+			<h2 class="mb-12 text-center text-3xl font-bold md:text-4xl">Why Choose Us?</h2>
+			<div class="grid grid-cols-1 gap-6 md:grid-cols-3">
+				<div class="bg-card shadow-soft rounded-lg p-6">
+					<h3 class="mb-4 text-xl font-semibold">Cutting-Edge Innovation</h3>
+					<p class="text-muted">Experience technology that pushes boundaries.</p>
+				</div>
+				<div class="bg-card shadow-soft rounded-lg p-6">
+					<h3 class="mb-4 text-xl font-semibold">Early Access</h3>
+					<p class="text-muted">Be the first to explore premium features.</p>
+				</div>
+				<div class="bg-card shadow-soft rounded-lg p-6">
+					<h3 class="mb-4 text-xl font-semibold">Vibrant Community</h3>
+					<p class="text-muted">Connect with innovators like you.</p>
+				</div>
+			</div>
+			<div class="mt-12 text-center">
+				<Button onClick={openSubscribeForm}>Get Started</Button>
 			</div>
 		</div>
 	</section>
 
-	<section
-		class="bg-purple-600 py-20 text-center text-white"
-		use:inView={{ threshold: 0.3 }}
-		on:inview={() => (ctaVisible = true)}
-	>
-		{#if ctaVisible}
-			<div class="container mx-auto px-4" in:fly={{ y: 50, duration: 800, easing: quintOut }}>
-				<h2 class="mb-6 text-4xl font-bold drop-shadow-md md:text-5xl">
-					{t('home', 'ready_to_build')}
-				</h2>
-				<p class="mx-auto mb-10 max-w-3xl text-lg opacity-90 md:text-xl">
-					Whether you have a clear vision or just an idea, we're here to help bring it to life.
-				</p>
-				<button
-					on:click={openSubscribeForm}
-					class="inline-block transform rounded-full bg-white px-10 py-4 font-bold text-purple-700 shadow-xl transition-all duration-300 hover:scale-105 hover:bg-gray-100"
-				>
-					{t('home', 'get_free_quote')}
-				</button>
+	<section class="section bg-background/50 px-4 py-16">
+		<div class="mx-auto max-w-6xl">
+			<h2 class="mb-12 text-center text-3xl font-bold md:text-4xl">How It Works</h2>
+			<div class="mx-auto max-w-2xl space-y-8">
+				<div class="flex items-start gap-4">
+					<span class="text-2xl font-bold text-purple-600">01</span>
+					<div>
+						<h3 class="text-xl font-semibold">Sign Up</h3>
+						<p class="text-muted">Join the waitlist with your email.</p>
+					</div>
+				</div>
+				<div class="flex items-start gap-4">
+					<span class="text-2xl font-bold text-purple-600">02</span>
+					<div>
+						<h3 class="text-xl font-semibold">Stay Updated</h3>
+						<p class="text-muted">Receive exclusive launch updates.</p>
+					</div>
+				</div>
+				<div class="flex items-start gap-4">
+					<span class="text-2xl font-bold text-purple-600">03</span>
+					<div>
+						<h3 class="text-xl font-semibold">Launch & Explore</h3>
+						<p class="text-muted">Dive into our platform first.</p>
+					</div>
+				</div>
 			</div>
-		{/if}
+			<div class="mt-12 text-center">
+				<Button onClick={openSubscribeForm}>Join Today</Button>
+			</div>
+		</div>
+	</section>
+
+	<section class="section px-4 py-16">
+		<div class="mx-auto max-w-6xl">
+			<h2 class="mb-12 text-center text-3xl font-bold md:text-4xl">What Our Community Says</h2>
+			<div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+				<div class="bg-card shadow-soft rounded-lg p-6">
+					<p class="text-muted mb-4 italic">
+						"This platform is a game-changer. Excited to be part of it!"
+					</p>
+					<p class="text-text font-semibold">— Jamie, Innovator</p>
+				</div>
+				<div class="bg-card shadow-soft rounded-lg p-6">
+					<p class="text-muted mb-4 italic">"The future looks bright with this technology."</p>
+					<p class="text-text font-semibold">— Taylor, Developer</p>
+				</div>
+			</div>
+			<div class="mt-12 text-center">
+				<Button onClick={openSubscribeForm}>Join Our Community</Button>
+			</div>
+		</div>
+	</section>
+
+	<section class="section bg-background/50 px-4 py-16">
+		<div class="mx-auto max-w-6xl">
+			<h2 class="mb-12 text-center text-3xl font-bold md:text-4xl">Frequently Asked Questions</h2>
+			<div class="mx-auto max-w-2xl space-y-6">
+				<div>
+					<h3 class="mb-2 text-xl font-semibold">When is the launch?</h3>
+					<p class="text-muted">We’re targeting Q2 2025. Join the waitlist for updates!</p>
+				</div>
+				<div>
+					<h3 class="mb-2 text-xl font-semibold">Is it free to join?</h3>
+					<p class="text-muted">Yes, the waitlist is free. Pricing details will come later.</p>
+				</div>
+			</div>
+			<div class="mt-12 text-center">
+				<Button onClick={openSubscribeForm}>Have More Questions?</Button>
+			</div>
+		</div>
+	</section>
+
+	<section id="waitlist-form" class="section hidden px-4 py-16">
+		<div class="mx-auto max-w-md text-center">
+			<h2 class="mb-6 text-3xl font-bold md:text-4xl">Join the Waitlist</h2>
+			<p class="text-muted mb-8">Secure your spot with your email.</p>
+			<form class="flex flex-col gap-4 sm:flex-row">
+				<input
+					type="email"
+					placeholder="Enter your email"
+					class="bg-card text-text flex-1 rounded-full border border-gray-200 px-4 py-3 shadow-sm focus:ring-2 focus:ring-purple-600 focus:outline-none"
+					required
+				/>
+				<Button type="submit">Submit</Button>
+			</form>
+		</div>
 	</section>
 </div>

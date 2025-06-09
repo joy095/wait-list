@@ -1,9 +1,6 @@
 <script lang="ts">
 	import { quintOut } from 'svelte/easing';
 	import { fly, fade } from 'svelte/transition';
-	// Ensure this path is correct based on where you placed inView.ts
-	// If it's in src/actions, use '$lib/actions/inView'
-	// If it's directly in src, you might need '../actions/inView' or similar
 	import { inView } from '$lib/actions/inView';
 
 	import type { Writable } from 'svelte/store';
@@ -17,37 +14,6 @@
 	}
 	const { t } = getContext<I18nContext>('i18n');
 
-	// --- Data for sections (defined once in this page component) ---
-	const values = [
-		{
-			icon: 'mage:light-bulb',
-			title: 'Innovation',
-			description: 'Pushing boundaries and creating new possibilities'
-		},
-		{
-			icon: 'ph:handshake-duotone',
-			title: 'Collaboration',
-			description: 'Working together to achieve excellence'
-		},
-		{
-			icon: 'healthicons:chart-line',
-			title: 'Growth',
-			description: 'Continuous improvement and development'
-		},
-		{
-			icon: 'line-md:heart-filled',
-			title: 'Passion',
-			description: 'Dedication to creating meaningful impact'
-		}
-	];
-
-	const galleryImages = ['img/1.webp', 'img/2.webp', 'img/4.webp'];
-
-	// --- State variables for section animations ---
-	let storyVisible = false;
-	let missionVisible = false;
-	let valuesVisible: boolean[] = Array(values.length).fill(false);
-	let galleryVisible = false;
 	let contactFormVisible = false; // State for the contact form section animation
 
 	// --- Contact Form State ---

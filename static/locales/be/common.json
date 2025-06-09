@@ -1,7 +1,5 @@
 {
 	"greeting": "হ্যালো, {{name}}!",
-	"copyright": "© {{year}} আপনার কোম্পানির নাম। সর্বস্বত্ব সংরক্ষিত।",
-	"made_with_love": "আমাদের টিম দ্বারা ❤️ দিয়ে তৈরি",
 	"terms_conditions": "নিয়ম ও শর্তাবলী",
 	"privacy_policy": "গোপনীয়তা নীতি",
 	"shipping_policy": "শিপিং নীতি",
