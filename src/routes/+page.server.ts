@@ -3,6 +3,16 @@ import { z } from 'zod';
 import { randomBytes } from 'crypto';
 import db from '$lib/server/db';
 import { sendConfirmationEmail } from '$lib/server/email';
+import pino from 'pino';
+
+const logger = pino({
+    level: process.env.NODE_ENV === 'production' ? 'info' : 'debug'
+});
+
+// --- Rate Limiter Config ---
+const DEFAULT_MAX_REQUESTS = 5; // Allow 5 form submissions
+const DEFAULT_WINDOW_SECONDS = 3600; // 1 hour window
+const TRUSTED_PROXIES = ['127.0.0.1', '::1'];
 
 // Base schema with common fields
 const baseSchema = z.object({
@@ -51,8 +61,112 @@ const formSchema = z.discriminatedUnion("userType", [
     })
 ]);
 
+const getClientIp = (request) => {
+    const forwarded = request.headers.get('x-forwarded-for');
+    const realIp = request.headers.get('x-real-ip');
+    const remoteAddr = request.headers.get('remote-addr') || 'unknown';
+
+    if (forwarded && TRUSTED_PROXIES.includes(remoteAddr)) {
+        const ips = forwarded.split(',').map(ip => ip.trim());
+        return ips[0] || remoteAddr;
+    }
+
+    return realIp || remoteAddr;
+};
+
+// Rate limiting function
+const checkRateLimit = async (rateLimitKey) => {
+    try {
+        // First, try to get existing rate limit record
+        const existingResult = await db.query(
+            'SELECT count, last_reset, window_seconds, limit_per_window FROM rate_limits WHERE key = $1',
+            [rateLimitKey]
+        );
+
+        const now = new Date();
+        let currentCount = 1;
+        let lastReset = now;
+        const windowSeconds = DEFAULT_WINDOW_SECONDS;
+        const limitPerWindow = DEFAULT_MAX_REQUESTS;
+
+        if (existingResult.rows.length > 0) {
+            const existing = existingResult.rows[0];
+            const windowExpired = now.getTime() > (existing.last_reset.getTime() + (existing.window_seconds * 1000));
+
+            if (windowExpired) {
+                // Reset the window
+                currentCount = 1;
+                lastReset = now;
+
+                await db.query(
+                    'UPDATE rate_limits SET count = $1, last_reset = $2, updated_at = NOW() WHERE key = $3',
+                    [currentCount, lastReset, rateLimitKey]
+                );
+            } else {
+                // Increment counter
+                currentCount = existing.count + 1;
+                lastReset = existing.last_reset;
+
+                await db.query(
+                    'UPDATE rate_limits SET count = $1, updated_at = NOW() WHERE key = $2',
+                    [currentCount, rateLimitKey]
+                );
+            }
+        } else {
+            // Create new rate limit record
+            await db.query(
+                `INSERT INTO rate_limits (key, count, last_reset, window_seconds, limit_per_window, created_at, updated_at)
+                 VALUES ($1, $2, $3, $4, $5, NOW(), NOW())`,
+                [rateLimitKey, currentCount, lastReset, windowSeconds, limitPerWindow]
+            );
+        }
+
+        logger.debug(`[Rate Limit] Current count: ${currentCount}, Limit: ${limitPerWindow}`);
+
+        if (currentCount > limitPerWindow) {
+            const resetTime = new Date(lastReset.getTime() + (windowSeconds * 1000));
+            const timeRemainingSeconds = Math.max(0, (resetTime.getTime() - Date.now()) / 1000);
+
+            logger.warn(`[Rate Limit] LIMIT EXCEEDED for key ${rateLimitKey} (${currentCount}/${limitPerWindow})`);
+
+            return {
+                allowed: false,
+                retryAfter: Math.ceil(timeRemainingSeconds)
+            };
+        }
+
+        logger.debug(`[Rate Limit] ✅ Request ALLOWED for ${rateLimitKey} (${currentCount}/${limitPerWindow})`);
+        return { allowed: true };
+
+    } catch (error) {
+        logger.error('[Rate Limit] Error in rate limiting:', error);
+        // In case of rate limiting error, allow the request but log the issue
+        return { allowed: true };
+    }
+};
+
 export const actions = {
     submitForm: async ({ request }) => {
+        logger.debug('[Form] Starting form submission');
+
+        const clientIp = getClientIp(request);
+        logger.debug(`[Form] Request from IP: ${clientIp}`);
+
+        // --- Rate Limiting Check ---
+        logger.debug('[Rate Limit] Starting rate limit check...');
+        const rateLimitKey = `form:ip:${clientIp}`;
+        logger.debug(`[Rate Limit] Rate limit key: ${rateLimitKey}`);
+
+        const rateLimitResult = await checkRateLimit(rateLimitKey);
+
+        if (!rateLimitResult.allowed) {
+            const retryMinutes = Math.ceil((rateLimitResult.retryAfter || 0) / 60);
+            return fail(429, {
+                message: `Too many form submissions. Please try again in ${retryMinutes} minutes.`,
+                retryAfter: rateLimitResult.retryAfter
+            });
+        }
+
         const formData = await request.formData();
         const data = {
             ...Object.fromEntries(formData),
@@ -120,10 +234,11 @@ export const actions = {
 
             await sendConfirmationEmail({ to: email, name: firstName, token: verificationToken });
 
+            logger.info(`[Form] ✅ Form submitted successfully for ${email.replace(/(.{2}).*@/, '$1***@')}`);
             return { type: 'success' };
 
         } catch (error) {
-            console.error('Form submission error:', error);
+            logger.error('[Form] Form submission error:', error);
             return fail(500, { message: 'An internal server error occurred. Please try again.' });
         }
     }
