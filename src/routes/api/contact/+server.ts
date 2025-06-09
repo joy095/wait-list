@@ -129,7 +129,7 @@ const checkRateLimit = async (rateLimitKey: string): Promise<{ allowed: boolean,
 export async function POST({ request }) {
     // Determine the client's IP address to use as the unique rate limit key
     const clientIp = getClientIp(request);
-    const rateLimitKey = `contact_form_submission:${clientIp} `;
+    const rateLimitKey = `contact_form_submission:${clientIp}`;
 
     // Perform rate limit check before processing the form data
     const { allowed, retryAfter } = await checkRateLimit(rateLimitKey);
