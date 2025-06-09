@@ -159,7 +159,7 @@
 				title="Share on WhatsApp"
 				aria-label="Share on WhatsApp"
 			>
-				<Icon icon="mdiYB:whatsapp" width="24" />
+				<Icon icon="ic:baseline-whatsapp" width="24" />
 			</a>
 			<a
 				href={socialLinks.facebook}
