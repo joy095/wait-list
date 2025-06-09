@@ -16,7 +16,7 @@ const transporter = nodemailer.createTransport({
         pass: env.SMTP_PASSWORD,
     },
     logger: true,
-    debug: true,
+    debug: false,
 });
 
 const FROM_EMAIL = env.SMTP_USERNAME;
