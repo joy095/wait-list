@@ -6,6 +6,7 @@
 	import type { Writable } from 'svelte/store';
 	import { getContext } from 'svelte';
 	import { browser } from '$app/environment';
+	import Footer from '$lib/components/Footer.svelte';
 
 	// Your existing I18n context logic...
 	interface I18nContext {
@@ -296,6 +297,8 @@
 		{/if}
 	</section>
 </div>
+
+<Footer />
 
 <style>
 	/* Keyframes for Bounce Animation */

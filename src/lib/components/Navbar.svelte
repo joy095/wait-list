@@ -320,7 +320,7 @@
 		class:translate-x-full={!mobileMenuOpen}
 		aria-hidden={!mobileMenuOpen}
 	>
-		<div class="px-4 py-6 sm:px-6">
+		<div class="bg-white/95 px-4 py-6 sm:px-6">
 			<div class="flex justify-end">
 				<button
 					on:click={toggleMobileMenu}
