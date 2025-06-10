@@ -125,7 +125,7 @@
 	// SEO and sharing metadata
 	const pageTitle = 'Email Confirmation - Wait list Signup';
 	const pageDescription = 'Confirm your email and share this page with your network!';
-	const pageImage = '/wait-list.webp';
+	const pageImage = 'https://placehold.co/1200x630/1a1a1a/ffd700?text=Bookings';
 
 	// Copy base URL to clipboard
 	function copyToClipboard() {
