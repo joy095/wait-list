@@ -437,7 +437,9 @@
 					receive a special founding member discount for life.
 				</p>
 				<div class="mt-8 flex flex-col items-center justify-center gap-4 sm:flex-row">
-					<button type="submit" class="cta-button-primary w-full sm:w-auto">Join Waitlist</button>
+					<button on:click={openSubscribeForm} class="cta-button-primary w-full sm:w-auto"
+						>Join Waitlist</button
+					>
 				</div>
 				<div class="mt-10 border-t border-gray-700/50 pt-8">
 					<h4 class="mb-4 text-lg font-semibold text-gray-300">Share with your network</h4>
