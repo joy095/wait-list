@@ -10,7 +10,7 @@
 			id: '2',
 			question: 'When will launch?',
 			answer:
-				'We’re targeting a launch in Q2 2025. Join the waitlist to get exclusive updates and early access!'
+				'We’re targeting a launch in Q3 2025. Join the waitlist to get exclusive updates and early access!'
 		},
 		{
 			id: '3',
@@ -21,7 +21,7 @@
 			id: '4',
 			question: 'What is the commission rate for shop owners?',
 			answer:
-				'Shop owners enjoy an initial low commission rate of just 1-3%, designed to help you keep more of your earnings.'
+				'Shop owners enjoy an initial low commission rate designed to help you keep more of your earnings.'
 		},
 		{
 			id: '5',

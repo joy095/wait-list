@@ -35,7 +35,7 @@
 				'.hero-title-text',
 				{
 					duration: 2.5,
-					text: 'Premium Booking for Elite Barbers & Makeup Artists',
+					text: 'Premium Booking for Barbers & Makeup Artists',
 					ease: 'power1.inOut'
 				},
 				'-=0.8'
@@ -257,8 +257,8 @@
 				<span class="hero-title-text" />
 			</h1>
 			<p class="section-subtitle">
-				Elevate your business with our exclusive booking platform, crafted for elite barbers and
-				makeup artists. Seamless scheduling, premium features, and unmatched elegance.
+				Elevate your business with our exclusive booking platform, crafted for barbers and makeup
+				artists. Seamless scheduling, premium features, and unmatched elegance.
 			</p>
 			<div class="mb-12 flex flex-col justify-center gap-4 sm:flex-row md:mb-16">
 				<button on:click={openSubscribeForm} class="cta-button cta-button-primary">
@@ -268,7 +268,7 @@
 			</div>
 			<div class="mx-auto grid max-w-4xl grid-cols-1 gap-6 md:grid-cols-3">
 				<div class="feature-card-hero glass-card p-6">
-					<h3 class="mb-2 text-lg font-semibold">Elite Scheduling</h3>
+					<h3 class="mb-2 text-lg font-semibold">Scheduling</h3>
 					<p class="text-sm">Instant booking for high-end clientele.</p>
 				</div>
 				<div class="feature-card-hero glass-card p-6">
@@ -383,7 +383,7 @@
 				</div>
 				<div class="animate-card">
 					<img
-						src="https://placehold.co/600x700/1a1a1a/ffd700?text=Your+Brand"
+						src="/img/standing.webp"
 						alt="Premium salon setup"
 						class="h-auto w-full rounded-2xl object-cover shadow-2xl"
 					/>
