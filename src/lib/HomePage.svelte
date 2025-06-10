@@ -161,7 +161,8 @@
 		const loader = new GLTFLoader();
 		let model: THREE.Group | null = null;
 		loader.load(
-			'https://threejs.org/examples/models/gltf/DamagedHelmet/glTF/DamagedHelmet.gltf',
+			// 'https://threejs.org/examples/models/gltf/DamagedHelmet/glTF/DamagedHelmet.gltf',
+			'/models/barbers_scissors.glb',
 			(gltf) => {
 				model = gltf.scene;
 				model.scale.set(2.5, 2.5, 2.5);
