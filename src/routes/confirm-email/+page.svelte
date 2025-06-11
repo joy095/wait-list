@@ -16,7 +16,7 @@
 	// SEO and sharing metadata
 	const pageTitle = 'Email Confirmation - Wait list Signup';
 	const pageDescription = 'Confirm your email and share this page with your network!';
-	const pageImage = 'https://wait-list-gamma.vercel.app/wait-list.webp';
+	const pageImage = 'https://wait-list-gamma.vercel.app/wait-list.png';
 
 	// Copy base URL to clipboard
 	function copyToClipboard() {
