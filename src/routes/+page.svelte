@@ -14,35 +14,40 @@
 </script>
 
 <svelte:head>
-	<!-- Primary Meta Tags -->
-	<title>{pageTitle}</title>
-	<meta name="title" content={pageTitle} />
-	<meta name="description" content={pageDescription} />
+	<title>Bookings | Premium Waitlist for Top Barbers & Makeup Artists</title>
 	<meta
-		name="keywords"
-		content="premium booking, elite barbers, makeup artists, scheduling software, luxury salon, waitlist"
+		name="description"
+		content="Join the exclusive waitlist for Bookings. The ultimate platform for barbers and makeup artists to elevate their brand, streamline scheduling, and attract high-value clientele."
 	/>
 
-	<!-- Open Graph / Facebook / LinkedIn -->
+	<!-- Open Graph Meta Tags -->
 	<meta property="og:type" content="website" />
 	<meta property="og:url" content="https://wait-list-gamma.vercel.app" />
-	<meta property="og:title" content={pageTitle} />
-	<meta property="og:description" content={pageDescription} />
+	<meta
+		property="og:title"
+		content="Bookings | Premium Waitlist for Top Barbers & Makeup Artists"
+	/>
+	<meta
+		property="og:description"
+		content="Join the exclusive waitlist for Bookings. The ultimate platform for barbers and makeup artists to elevate their brand, streamline scheduling, and attract high-value clientele."
+	/>
 	<meta property="og:image" content="https://wait-list-gamma.vercel.app/wait-list.png" />
 	<meta property="og:image:width" content="1200" />
 	<meta property="og:image:height" content="630" />
 	<meta property="og:image:alt" content="Bookings Waitlist Preview" />
 
-	<!-- Twitter -->
+	<!-- Twitter Meta Tags -->
 	<meta name="twitter:card" content="summary_large_image" />
 	<meta name="twitter:url" content="https://wait-list-gamma.vercel.app" />
-	<meta name="twitter:title" content={pageTitle} />
-	<meta name="twitter:description" content={pageDescription} />
-	<meta name="twitter:image" content={pageImage} />
-
-	<!-- Optional for better card handling -->
-	<!-- <meta name="twitter:site" content="@YourTwitterHandle" />
-	<meta name="twitter:creator" content="@YourCreatorHandle" /> -->
+	<meta
+		name="twitter:title"
+		content="Bookings | Premium Waitlist for Top Barbers & Makeup Artists"
+	/>
+	<meta
+		name="twitter:description"
+		content="Join the exclusive waitlist for Bookings. The ultimate platform for barbers and makeup artists to elevate their brand, streamline scheduling, and attract high-value clientele."
+	/>
+	<meta name="twitter:image" content="https://wait-list-gamma.vercel.app/wait-list.png" />
 </svelte:head>
 
 <HomePage />
