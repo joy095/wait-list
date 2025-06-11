@@ -3,29 +3,30 @@
 
 	const pageTitle = 'Bookings | Premium Waitlist for Top Barbers & Makeup Artists';
 	const pageDescription = 'Join the exclusive waitlist for Bookings...';
-
-	// Try with query parameter to bust cache
-	const pageImage = 'https://wait-list-gamma.vercel.app/wait-list.png?v=1';
-	const siteUrl = 'https://wait-list-gamma.vercel.app';
+	const pageImage = 'https://wait-list-gamma.vercel.app/wait-list.png';
 </script>
 
 <svelte:head>
+	<!-- Primary Meta Tags -->
 	<title>{pageTitle}</title>
+	<meta name="title" content={pageTitle} />
 	<meta name="description" content={pageDescription} />
+	<meta
+		name="keywords"
+		content="premium booking, elite barbers, makeup artists, scheduling software, luxury salon, waitlist"
+	/>
 
-	<!-- Open Graph -->
-	<meta property="og:type" content="website" />
-	<meta property="og:url" content={siteUrl} />
+	<!-- Open Graph / Facebook / LinkedIn -->
 	<meta property="og:title" content={pageTitle} />
+	<meta property="og:site_name" content="Wait List" />
+	<meta property="og:url" content="https://wait-list-gamma.vercel.app" />
 	<meta property="og:description" content={pageDescription} />
+	<meta property="og:type" content="website" />
 	<meta property="og:image" content={pageImage} />
-	<meta property="og:image:width" content="1200" />
-	<meta property="og:image:height" content="630" />
-	<meta property="og:image:alt" content="Bookings Waitlist Preview" />
-	<meta property="og:site_name" content="Bookings" />
 
 	<!-- Twitter -->
 	<meta name="twitter:card" content="summary_large_image" />
+	<meta name="twitter:url" content="https://wait-list-gamma.vercel.app" />
 	<meta name="twitter:title" content={pageTitle} />
 	<meta name="twitter:description" content={pageDescription} />
 	<meta name="twitter:image" content={pageImage} />
