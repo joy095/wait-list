@@ -16,7 +16,7 @@
 	// SEO and sharing metadata
 	const pageTitle = 'Email Confirmation - Wait list Signup';
 	const pageDescription = 'Confirm your email and share this page with your network!';
-	const pageImage = 'https://wait-list-gamma.vercel.app/wait-list.png';
+	const pageImage = 'https://wait-list-gamma.vercel.app/wait-list.jpg';
 
 	// Copy base URL to clipboard
 	function copyToClipboard() {
@@ -87,7 +87,7 @@
 	<meta property="og:url" content="https://wait-list-gamma.vercel.app" />
 	<meta property="og:title" content={pageTitle} />
 	<meta property="og:description" content={pageDescription} />
-	<meta property="og:image" content="https://wait-list-gamma.vercel.app/wait-list.png" />
+	<meta property="og:image" content="https://wait-list-gamma.vercel.app/wait-list.jpg" />
 	<meta property="og:image:width" content="1200" />
 	<meta property="og:image:height" content="630" />
 	<meta property="og:image:alt" content="Bookings Waitlist Preview" />

@@ -3,7 +3,7 @@
 
 	const pageTitle = 'Bookings | Premium Waitlist for Top Barbers & Makeup Artists';
 	const pageDescription = 'Join the exclusive waitlist for Bookings...';
-	const pageImage = 'https://wait-list-gamma.vercel.app/wait-list.png';
+	const pageImage = 'https://wait-list-gamma.vercel.app/wait-list.jpg';
 </script>
 
 <svelte:head>
