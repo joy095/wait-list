@@ -25,15 +25,17 @@
 
 	<!-- Open Graph / Facebook / LinkedIn -->
 	<meta property="og:type" content="website" />
-	<meta property="og:url" content="https://wait-list-gamma.vercel.app/" />
+	<meta property="og:url" content="https://wait-list-gamma.vercel.app" />
 	<meta property="og:title" content={pageTitle} />
 	<meta property="og:description" content={pageDescription} />
-	<meta property="og:image" content={pageImage} />
-	<meta property="og:site_name" content="Bookings Waitlist" />
+	<meta property="og:image" content="https://wait-list-gamma.vercel.app/wait-list.png" />
+	<meta property="og:image:width" content="1200" />
+	<meta property="og:image:height" content="630" />
+	<meta property="og:image:alt" content="Bookings Waitlist Preview" />
 
 	<!-- Twitter -->
 	<meta name="twitter:card" content="summary_large_image" />
-	<meta name="twitter:url" content="https://wait-list-gamma.vercel.app/" />
+	<meta name="twitter:url" content="https://wait-list-gamma.vercel.app" />
 	<meta name="twitter:title" content={pageTitle} />
 	<meta name="twitter:description" content={pageDescription} />
 	<meta name="twitter:image" content={pageImage} />

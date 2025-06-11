@@ -150,20 +150,26 @@
 </script>
 
 <svelte:head>
+	<title>{pageTitle}</title>
+	<meta name="title" content={pageTitle} />
+	<meta name="description" content={pageDescription} />
+
+	<!-- Open Graph / Facebook / LinkedIn -->
 	<meta property="og:type" content="website" />
-	<meta property="og:url" content={baseUrl} />
+	<meta property="og:url" content="https://wait-list-gamma.vercel.app" />
 	<meta property="og:title" content={pageTitle} />
 	<meta property="og:description" content={pageDescription} />
-	<meta property="og:image" content={pageImage} />
+	<meta property="og:image" content="https://wait-list-gamma.vercel.app/wait-list.png" />
+	<meta property="og:image:width" content="1200" />
+	<meta property="og:image:height" content="630" />
+	<meta property="og:image:alt" content="Bookings Waitlist Preview" />
 
+	<!-- Twitter -->
 	<meta name="twitter:card" content="summary_large_image" />
-	<meta name="twitter:url" content={baseUrl} />
+	<meta name="twitter:url" content="https://wait-list-gamma.vercel.app" />
 	<meta name="twitter:title" content={pageTitle} />
 	<meta name="twitter:description" content={pageDescription} />
 	<meta name="twitter:image" content={pageImage} />
-
-	<title>{pageTitle}</title>
-	<meta name="description" content={pageDescription} />
 </svelte:head>
 
 <div class="min-h-screen bg-gray-50">
