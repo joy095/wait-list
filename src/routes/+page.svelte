@@ -6,11 +6,11 @@
 	const pageTitle = 'Bookings | Premium Waitlist for Top Barbers & Makeup Artists';
 	const pageDescription =
 		'Join the exclusive waitlist for Bookings. The ultimate platform for barbers and makeup artists to elevate their brand, streamline scheduling, and attract high-value clientele.';
-	const pageImage = '/wait-list.webp'; // Optimal for social sharing
+	const pageImage = 'https://wait-list-gamma.vercel.app/wait-list.webp'; // Optimal for social sharing
 
 	$: baseUrl = browser
 		? `${window.location.protocol}//${window.location.host}`
-		: 'https://yourdomain.com'; // Fallback for SSR
+		: 'https://wait-list-gamma.vercel.app'; // Fallback for SSR
 </script>
 
 <svelte:head>

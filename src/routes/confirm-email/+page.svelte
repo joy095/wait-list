@@ -11,12 +11,12 @@
 	// Base URL (e.g., http://localhost:5173)
 	$: baseUrl = browser
 		? `${window.location.protocol}//${window.location.host}`
-		: 'https://yourdomain.com'; // Fallback for SSR
+		: 'https://wait-list-gamma.vercel.app'; // Fallback for SSR
 
 	// SEO and sharing metadata
 	const pageTitle = 'Email Confirmation - Wait list Signup';
 	const pageDescription = 'Confirm your email and share this page with your network!';
-	const pageImage = '/wait-list.webp';
+	const pageImage = 'https://wait-list-gamma.vercel.app/wait-list.webp';
 
 	// Copy base URL to clipboard
 	function copyToClipboard() {

@@ -19,7 +19,7 @@
 
 	$: baseUrl = browser
 		? `${window.location.protocol}//${window.location.host}`
-		: 'https://yourdomain.com'; // Fallback for SSR
+		: 'https://wait-list-gamma.vercel.app'; // Fallback for SSR
 
 	// --- Social Sharing Links ---
 	$: shareUrl = browser ? encodeURIComponent(baseUrl) : '';
