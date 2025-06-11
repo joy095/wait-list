@@ -6,7 +6,7 @@
 	const pageTitle = 'Bookings | Premium Waitlist for Top Barbers & Makeup Artists';
 	const pageDescription =
 		'Join the exclusive waitlist for Bookings. The ultimate platform for barbers and makeup artists to elevate their brand, streamline scheduling, and attract high-value clientele.';
-	const pageImage = 'https://placehold.co/1200x630/1a1a1a/ffd700?text=Bookings'; // Optimal for social sharing
+	const pageImage = '/wait-list.webp'; // Optimal for social sharing
 
 	$: baseUrl = browser
 		? `${window.location.protocol}//${window.location.host}`
