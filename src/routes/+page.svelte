@@ -32,6 +32,14 @@
 	/>
 	<meta name="twitter:description" content="Join the exclusive waitlist for Bookings..." />
 	<meta name="twitter:image" content="https://wait-list-gamma.vercel.app/wait-list.jpg" />
+
+	<!-- Fonts -->
+	<link rel="preconnect" href="https://fonts.googleapis.com" />
+	<link rel="preconnect" href="https://fonts.gstatic.com" />
+	<link
+		href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@400;500;600&display=swap"
+		rel="stylesheet"
+	/>
 </svelte:head>
 
 <HomePage />
