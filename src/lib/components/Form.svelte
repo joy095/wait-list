@@ -1124,14 +1124,18 @@
 				class="form-container relative max-h-[90vh] w-full max-w-md overflow-y-auto rounded-2xl bg-white p-8 text-center shadow-2xl"
 				in:scale={{ duration: 400, start: 0.9 }}
 				out:fade={{ duration: 300 }}
+				role="dialog"
+				aria-labelledby="confirmation-title"
+				aria-describedby="confirmation-message"
 			>
-				<div class="mb-4 flex justify-center">
+				<div class="mb-5 flex justify-center">
 					<svg
 						xmlns="http://www.w3.org/2000/svg"
-						class="h-12 w-12 text-green-500"
+						class="h-14 w-14 animate-pulse text-green-500"
 						fill="none"
 						viewBox="0 0 24 24"
 						stroke="currentColor"
+						aria-hidden="true"
 					>
 						<path
 							stroke-linecap="round"
@@ -1141,11 +1145,18 @@
 						/>
 					</svg>
 				</div>
-				<h3 class="mb-4 text-2xl font-bold text-gray-900">Thank You!</h3>
-				<p class="mb-6 text-gray-600">Your submission has been received successfully.</p>
+
+				<h3 id="confirmation-title" class="mb-4 text-2xl font-bold text-gray-900">Thank you!</h3>
+
+				<p id="confirmation-message" class="mb-2 text-gray-700">
+					A confirmation email has been sent to <span class="font-medium">{formData.email}</span>.
+				</p>
+
+				<p class="mb-6 text-gray-600">Please check your inbox and confirm your email to proceed.</p>
+
 				<button
 					on:click={closeAllModals}
-					class="inline-flex cursor-pointer items-center rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+					class="inline-flex items-center justify-center rounded-lg bg-indigo-600 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-indigo-700 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
 				>
 					Start Exploring
 				</button>
