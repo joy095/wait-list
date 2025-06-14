@@ -6,7 +6,7 @@ import { sendConfirmationEmail } from '$lib/server/email';
 import pino from 'pino';
 import type { PageServerLoad } from './$types';
 
-export const load: PageServerLoad = async () => {
+export const load: PageServerLoad = () => {
     return {
         title: 'Bookings | Premium Waitlist for Top Barbers & Makeup Artists',
         description:
@@ -75,7 +75,7 @@ const formSchema = z.discriminatedUnion("userType", [
     })
 ]);
 
-const getClientIp = (request) => {
+const getClientIp = (request: Request) => {
     const forwarded = request.headers.get('x-forwarded-for');
     const realIp = request.headers.get('x-real-ip');
     const remoteAddr = request.headers.get('remote-addr') || 'unknown';
@@ -89,7 +89,7 @@ const getClientIp = (request) => {
 };
 
 // Rate limiting function
-const checkRateLimit = async (rateLimitKey) => {
+const checkRateLimit = async (rateLimitKey: string) => {
     try {
         // First, try to get existing rate limit record
         const existingResult = await db.query(

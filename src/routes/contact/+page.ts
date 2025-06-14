@@ -1,6 +1,6 @@
-import type { PageServerLoad } from "../$types";
+import type { PageLoad } from './$types';
 
-export const load: PageServerLoad = async () => {
+export const load: PageLoad = () => {
     return {
         title: 'Contact us - Wait list Signup',
         description:
