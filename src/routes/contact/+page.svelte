@@ -8,6 +8,8 @@
 	import { browser } from '$app/environment';
 	import Footer from '$lib/components/Footer.svelte';
 
+	export let data;
+
 	// Your existing I18n context logic...
 	interface I18nContext {
 		t: (namespace: string, key: string, options?: Record<string, unknown>) => string;
@@ -125,7 +127,6 @@
 	// SEO and sharing metadata
 	const pageTitle = 'Email Confirmation - Wait list Signup';
 	const pageDescription = 'Confirm your email and share this page with your network!';
-	const pageImage = 'https://wait-list-gamma.vercel.app/wait-list.jpg';
 
 	// Copy base URL to clipboard
 	function copyToClipboard() {
@@ -150,32 +151,26 @@
 </script>
 
 <svelte:head>
-	<title>{pageTitle}</title>
-	<meta name="title" content="Email Confirmation - Wait list Signup" />
-	<meta name="description" content="Confirm your email and share this page with your network!" />
+	<title>{data.title}</title>
+	<meta name="description" content={data.description} />
 
-	<!-- Open Graph / Facebook / LinkedIn -->
+	<!-- Open Graph Meta Tags -->
+	<meta property="og:title" content={data.title} />
+	<meta property="og:description" content={data.description} />
+	<meta property="og:url" content={data.url} />
+	<meta property="og:image" content={data.image} />
+	<meta property="og:image:type" content="image/jpg" />
 	<meta property="og:type" content="website" />
-	<meta property="og:url" content="https://wait-list-gamma.vercel.app" />
-	<meta property="og:title" content="Email Confirmation - Wait list Signup" />
-	<meta
-		property="og:description"
-		content="Confirm your email and share this page with your network!"
-	/>
-	<meta property="og:image" content="https://wait-list-gamma.vercel.app/wait-list.jpg" />
-	<meta property="og:image:width" content="1200" />
-	<meta property="og:image:height" content="630" />
-	<meta property="og:image:alt" content="Bookings Waitlist Preview" />
+	<meta property="og:site_name" content={data.siteName} />
+	<link rel="canonical" href={data.url} />
 
-	<!-- Twitter -->
+	<!-- Twitter Meta Tags -->
 	<meta name="twitter:card" content="summary_large_image" />
-	<meta name="twitter:url" content="https://wait-list-gamma.vercel.app" />
-	<meta name="twitter:title" content="Email Confirmation - Wait list Signup" />
-	<meta
-		name="twitter:description"
-		content="Confirm your email and share this page with your network!"
-	/>
-	<meta name="twitter:image" content="https://wait-list-gamma.vercel.app/wait-list.jpg" />
+	<meta name="twitter:site" content={data.twitterHandle} />
+	<meta name="twitter:creator" content={data.twitterHandle} />
+	<meta name="twitter:title" content={data.title} />
+	<meta name="twitter:description" content={data.description} />
+	<meta name="twitter:image" content={data.image} />
 </svelte:head>
 
 <div class="min-h-screen bg-gray-50">
