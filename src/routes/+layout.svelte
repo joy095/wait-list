@@ -5,9 +5,8 @@
 	import Lenis from 'lenis';
 	import { browser } from '$app/environment';
 	import Navbar from '$lib/components/Navbar.svelte';
-	import Footer from '$lib/components/Footer.svelte';
 	import { get } from 'svelte/store';
-	import i18n, { initI18n, supportedLngs, currentLanguage, i18nContext } from '$lib/i18n';
+	import i18n, { initI18n, currentLanguage, i18nContext } from '$lib/i18n';
 	import { page } from '$app/stores';
 	import { goto, invalidateAll } from '$app/navigation'; // Ensure invalidateAll is imported
 	import Form from '$lib/components/Form.svelte';
@@ -100,6 +99,16 @@
 		}
 	});
 </script>
+
+<svelte:head>
+	<!-- Fonts -->
+	<link rel="preconnect" href="https://fonts.googleapis.com" />
+	<link rel="preconnect" href="https://fonts.gstatic.com" />
+	<link
+		href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@400;500;600&display=swap"
+		rel="stylesheet"
+	/>
+</svelte:head>
 
 <Navbar />
 

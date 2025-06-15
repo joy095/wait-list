@@ -4,19 +4,7 @@ import { randomBytes } from 'crypto';
 import db from '$lib/server/db';
 import { sendConfirmationEmail } from '$lib/server/email';
 import pino from 'pino';
-import type { PageServerLoad } from './$types';
 
-export const load: PageServerLoad = () => {
-    return {
-        title: 'Bookings | Premium Waitlist for Top Barbers & Makeup Artists',
-        description:
-            'Join the exclusive waitlist for Bookings...',
-        url: 'https://wait-list-gamma.vercel.app',
-        image: 'https://wait-list-gamma.vercel.app/wait-list.jpg"',
-        siteName: 'Wail List for Premium Barbers & Makeup Artists',
-        twitterHandle: '@JoyKarmakar9871'
-    };
-};
 
 
 const logger = pino({

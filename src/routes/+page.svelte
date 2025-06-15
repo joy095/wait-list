@@ -2,6 +2,8 @@
 	import HomePage from '$lib/HomePage.svelte';
 
 	export let data;
+
+	console.log(data.title);
 </script>
 
 <svelte:head>
@@ -25,14 +27,11 @@
 	<meta name="twitter:title" content={data.title} />
 	<meta name="twitter:description" content={data.description} />
 	<meta name="twitter:image" content={data.image} />
-
-	<!-- Fonts -->
-	<link rel="preconnect" href="https://fonts.googleapis.com" />
-	<link rel="preconnect" href="https://fonts.gstatic.com" />
-	<link
-		href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@400;500;600&display=swap"
-		rel="stylesheet"
-	/>
 </svelte:head>
 
-<HomePage />
+<!-- <HomePage /> -->
+
+<main class="p-10">
+	<h1 class="text-4xl font-bold">{data.title}</h1>
+	<p class="mt-4 text-lg">{data.description}</p>
+</main>
