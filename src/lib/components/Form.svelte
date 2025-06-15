@@ -374,7 +374,7 @@
 										name="firstName"
 										autocomplete="off"
 										bind:value={formData.firstName}
-										class="block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm transition-all focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 {formErrors.firstName
+										class="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm transition-all focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 {formErrors.firstName
 											? 'error border-red-500'
 											: ''}"
 										placeholder="John"
@@ -416,7 +416,7 @@
 										name="lastName"
 										autocomplete="off"
 										bind:value={formData.lastName}
-										class="block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm transition-all focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 {formErrors.lastName
+										class="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm transition-all focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 {formErrors.lastName
 											? 'error border-red-500'
 											: ''}"
 										placeholder="Doe"
@@ -456,7 +456,7 @@
 										name="email"
 										bind:value={formData.email}
 										autocomplete="off"
-										class="block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm transition-all focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 {formErrors.email
+										class="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm transition-all focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 {formErrors.email
 											? 'error border-red-500'
 											: ''}"
 										placeholder="john.doe@example.com"
@@ -630,7 +630,7 @@
 											name="bookingFrustrations"
 											bind:value={formData.bookingFrustrations}
 											rows="4"
-											class="block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm transition-all focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+											class="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm transition-all focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
 											placeholder={t('form', 'frustrations_barber_placeholder')}
 										></textarea>
 										<p class="mt-1 text-xs text-gray-500">
@@ -646,7 +646,7 @@
 											name="generalMessage"
 											bind:value={formData.generalMessage}
 											rows="4"
-											class="block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm transition-all focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+											class="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm transition-all focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
 											placeholder={t('form', 'feedback_placeholder')}
 										></textarea>
 										<p class="mt-1 text-xs text-gray-500">
@@ -756,7 +756,7 @@
 											name="bookingFrustrations"
 											bind:value={formData.bookingFrustrations}
 											rows="4"
-											class="block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm transition-all focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+											class="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm transition-all focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
 											placeholder={t('form', 'frustrations_booking_makeup_placeholder')}
 										></textarea>
 										<p class="mt-1 text-xs text-gray-500">
@@ -772,7 +772,7 @@
 											name="generalMessage"
 											bind:value={formData.generalMessage}
 											rows="4"
-											class="block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm transition-all focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+											class="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm transition-all focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
 											placeholder={t('form', 'feedback_placeholder')}
 										></textarea>
 										<p class="mt-1 text-xs text-gray-500">
@@ -823,7 +823,7 @@
 											name="biggestChallenges"
 											bind:value={formData.biggestChallenges}
 											rows="4"
-											class="block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm transition-all focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+											class="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm transition-all focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
 											placeholder={t('form', 'managing_bookings_placeholder')}
 										></textarea>
 										<p class="mt-1 text-xs text-gray-500">
@@ -874,7 +874,7 @@
 											name="biggestChallenges"
 											bind:value={formData.biggestChallenges}
 											rows="4"
-											class="block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm transition-all focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+											class="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm transition-all focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
 											placeholder={t('form', 'managing_bookings_placeholder')}
 										></textarea>
 										<p class="mt-1 text-xs text-gray-500">
@@ -897,7 +897,7 @@
 											name="otherDescription"
 											bind:value={formData.otherDescription}
 											rows="4"
-											class="block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm transition-all focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 {formErrors.otherDescription
+											class="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm transition-all focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 {formErrors.otherDescription
 												? 'error border-red-500'
 												: ''}"
 											placeholder={t('form', 'other_description_placeholder')}
@@ -1042,7 +1042,7 @@
 							{/if}
 						</div>
 						<!-- Navigation Buttons -->
-						<div class="mt-6 flex justify-between border-t border-gray-200 pt-5">
+						<div class="mt-6 flex justify-between pt-5">
 							<button
 								type="button"
 								on:click={prevStep}
@@ -1185,3 +1185,13 @@
 		{/if}
 	</div>
 {/if}
+
+<style>
+	.cta-button-secondary {
+		padding: 0.5rem 1rem;
+	}
+
+	.cta-button-primary {
+		padding: 0.5rem 1rem;
+	}
+</style>
