@@ -586,6 +586,7 @@
 	.cta-button-primary:hover {
 		transform: scale(1.05);
 		box-shadow: 0 6px 25px rgba(255, 215, 0, 0.3);
+		cursor: pointer;
 	}
 	.cta-button-secondary {
 		background: transparent;

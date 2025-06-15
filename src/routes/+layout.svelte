@@ -19,7 +19,7 @@
 	}
 
 	let { data, children }: { data: LayoutData; children: any } = $props();
-	let initialized = !browser; // true for SSR so children render
+	let initialized = $state(!browser); // true for SSR so children render
 
 	// i18n Initialization (client only)
 	onMount(async () => {
