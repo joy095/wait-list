@@ -6,7 +6,7 @@ export const load: PageLoad = () => {
         description:
             'Join the exclusive waitlist for Bookings...',
         url: 'https://wait-list-gamma.vercel.app',
-        image: 'https://wait-list-gamma.vercel.app/wait-list.jpg"',
+        image: 'https://wait-list-gamma.vercel.app/wait-list.jpg',
         siteName: 'Wail List for Premium Barbers & Makeup Artists',
         twitterHandle: '@JoyKarmakar9871'
     };

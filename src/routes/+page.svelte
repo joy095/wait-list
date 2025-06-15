@@ -2,8 +2,6 @@
 	import HomePage from '$lib/HomePage.svelte';
 
 	export let data;
-
-	console.log(data.title);
 </script>
 
 <svelte:head>
