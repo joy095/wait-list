@@ -13,7 +13,9 @@
 	"describes_you_4": "Makeup Artist (Independent)",
 	"first_name_error": "First name is required.",
 	"last_name_error": "Last name is required.",
+	"email_invalid": "the email address you entered is not in the correct",
 	"email_error": "Email is required.",
+	"confirmation_email_sent": "A confirmation email is a transactional email sent to {{email}}",
 	"select_error": "Please select a user type.",
 
 	"barber_heading": "Barber Questions",
@@ -85,5 +87,11 @@
 	"features_0": "Select an option...",
 	"features_1": "Yes, it's a top priority",
 	"features_2": "Yes, it would be valuable",
-	"features_3": "No, not a priority"
+	"features_3": "No, not a priority",
+
+	"select_invalid": "Invalid option selected.",
+	"submission_failed": "Submission failed. Please check your inputs.",
+	"server_error": "An unexpected server error occurred.",
+	"submit": "Submit",
+	"submitting": "Submitting..."
 }

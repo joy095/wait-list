@@ -404,7 +404,7 @@
 				</div>
 				<div class="animate-card">
 					<img
-						src="/img/standing.webp"
+						src="/img/screen.webp"
 						alt="Premium salon setup"
 						class="h-auto w-full rounded-2xl object-cover shadow-2xl"
 					/>
@@ -538,34 +538,7 @@
 		position: relative;
 		z-index: 3;
 	}
-	.section-title {
-		font-family: 'Playfair Display', serif;
-		background: linear-gradient(135deg, #ffd700, #f0c24a, #e6ac00);
-		-webkit-background-clip: text;
-		-webkit-text-fill-color: transparent;
-		font-weight: 700;
-	}
-	.section-subtitle {
-		color: #d1d5db;
-		max-width: 650px;
-		margin: 1rem auto 2.5rem;
-		font-size: 1.125rem;
-		line-height: 1.75;
-	}
-	.glass-card {
-		background: rgba(255, 255, 255, 0.05);
-		backdrop-filter: blur(10px);
-		-webkit-backdrop-filter: blur(10px);
-		border: 1px solid rgba(255, 255, 255, 0.1);
-		border-radius: 1rem;
-		transition:
-			background 0.3s ease,
-			transform 0.3s ease;
-	}
-	.glass-card:hover {
-		background: rgba(255, 255, 255, 0.1);
-		transform: translateY(-8px);
-	}
+
 	.glass-card h3 {
 		color: #ffd700;
 	}
@@ -574,34 +547,7 @@
 	.faq-answer {
 		color: #d1d5db;
 	}
-	.cta-button-primary {
-		background: linear-gradient(135deg, #ffd700, #e6ac00);
-		color: #111111;
-		font-weight: 600;
-		border-radius: 0.5rem;
-		padding: 1rem 2rem;
-		transition: all 0.3s ease;
-		box-shadow: 0 4px 20px rgba(255, 215, 0, 0.2);
-	}
-	.cta-button-primary:hover {
-		transform: scale(1.05);
-		box-shadow: 0 6px 25px rgba(255, 215, 0, 0.3);
-		cursor: pointer;
-	}
-	.cta-button-secondary {
-		background: transparent;
-		color: #e5e7eb;
-		font-weight: 500;
-		border-radius: 0.5rem;
-		padding: 1rem 2rem;
-		border: 1px solid #e5e7eb;
-		transition: all 0.3s ease;
-	}
-	.cta-button-secondary:hover {
-		background: #e5e7eb;
-		color: #111111;
-		transform: scale(1.05);
-	}
+
 	.spinner {
 		border: 4px solid rgba(255, 255, 255, 0.2);
 		border-left-color: #ffd700;
@@ -632,6 +578,7 @@
 		background: rgba(255, 255, 255, 0.2);
 		color: #fff;
 		transform: translateY(-2px);
+		cursor: pointer;
 	}
 
 	.copy-notification {

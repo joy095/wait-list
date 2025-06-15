@@ -10,6 +10,7 @@
 	import { page } from '$app/stores';
 	import { goto, invalidateAll } from '$app/navigation';
 	import Form from '$lib/components/Form.svelte';
+	import gsap from 'gsap';
 
 	interface LayoutData {
 		i18n: {
@@ -64,6 +65,22 @@
 
 	onDestroy(() => {
 		lenisInstance?.destroy();
+	});
+
+	onMount(() => {
+		const heroTl = gsap.timeline({ delay: 0.5 });
+		heroTl.fromTo(
+			'.cta-button',
+			{ opacity: 0, y: 20 },
+			{
+				opacity: 1,
+				y: 0,
+				duration: 0.8,
+				stagger: 0.2,
+				ease: 'back.out(1.7)'
+			},
+			'-=1.5'
+		);
 	});
 </script>
 

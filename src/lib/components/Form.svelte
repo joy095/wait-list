@@ -7,6 +7,8 @@
 	import { getContext, onMount } from 'svelte';
 	import type { Writable } from 'svelte/store';
 
+	import PremiumGlassSelect from './CustomSelect.svelte';
+
 	interface I18nContext {
 		t: (namespace: string, key: string, options?: Record<string, unknown>) => string;
 		changeLanguage: (lang: string) => void;
@@ -14,7 +16,41 @@
 	}
 	const { t } = getContext<I18nContext>('i18n');
 
-	// Define the shape of your form data
+	const userDescribe = [
+		{ value: 'customer_barber', label: 'describes_you_1' },
+		{ value: 'customer_makeup', label: 'describes_you_2' },
+		{ value: 'owner_barber', label: 'describes_you_3' },
+		{ value: 'owner_makeup', label: 'describes_you_4' }
+	];
+
+	const barberVisit = [
+		{ value: 'weekly', label: 'visit_barber_1' },
+		{ value: 'biweekly', label: 'visit_barber_2' },
+		{ value: 'monthly', label: 'visit_barber_3' },
+		{ value: 'few-months', label: 'visit_barber_4' }
+	];
+
+	const commissionCharge = [
+		{ value: '', label: 'charged_commission_0' },
+		{ value: 'yes_5_10', label: 'charged_commission_1' },
+		{ value: 'yes_10_15', label: 'charged_commission_2' },
+		{ value: 'no_monthly_fee', label: 'charged_commission_3' }
+	];
+
+	const discountsSubscriptions = [
+		{ value: '', label: 'discounts_subscriptions_0' },
+		{ value: 'yes_10_percent', label: 'discounts_subscriptions_1' },
+		{ value: 'yes_subscriptions', label: 'discounts_subscriptions_2' },
+		{ value: 'no', label: 'discounts_subscriptions_3' }
+	];
+
+	const makeupFeature = [
+		{ value: '', label: 'features_0' },
+		{ value: 'yes_high_priority', label: 'features_1' },
+		{ value: 'yes_valuable', label: 'features_2' },
+		{ value: 'no', label: 'features_3' }
+	];
+
 	type FormData = {
 		firstName: string;
 		lastName: string;
@@ -30,7 +66,7 @@
 		offerDiscounts: string;
 		portfolioInterest: string;
 		biggestChallenges: string;
-		generalMessage: string; // New field for customer types
+		generalMessage: string;
 	};
 
 	let currentStep = 1;
@@ -71,10 +107,10 @@
 		firstName: true,
 		lastName: true,
 		email: true,
-		userType: true
+		userType: true,
+		otherDescription: true
 	};
 
-	// Validate individual fields in real-time
 	function validateField(field: keyof FormData): boolean {
 		switch (field) {
 			case 'firstName':
@@ -82,30 +118,36 @@
 				return !!formData[field].trim();
 			case 'email':
 				return /^\S+@\S+\.\S+$/.test(formData.email);
+
 			case 'userType':
-				return !!formData.userType;
+				return ['customer_barber', 'customer_makeup', 'owner_barber', 'owner_makeup'].includes(
+					formData.userType
+				);
+
 			default:
 				return true;
 		}
 	}
 
-	// Update field validity on input
 	$: {
 		fieldValidity.firstName = validateField('firstName');
 		fieldValidity.lastName = validateField('lastName');
 		fieldValidity.email = validateField('email');
 		fieldValidity.userType = validateField('userType');
+		fieldValidity.otherDescription = validateField('otherDescription');
 	}
 
 	function validateCurrentStep(): boolean {
 		formErrors = {};
+		console.log(`[Form] Validating step ${currentStep}, userType: ${formData.userType}`); // Debug
 		switch (currentStep) {
 			case 1:
 				if (!formData.firstName) formErrors.firstName = t('form', 'first_name_error');
 				if (!formData.lastName) formErrors.lastName = t('form', 'last_name_error');
 				if (!formData.email) formErrors.email = t('form', 'email_error');
-				else if (!validateField('email')) formErrors.email = 'Invalid email format.';
+				else if (!validateField('email')) formErrors.email = t('form', 'email_invalid');
 				if (!formData.userType) formErrors.userType = t('form', 'select_error');
+				else if (!validateField('userType')) formErrors.userType = t('form', 'select_invalid');
 				return Object.keys(formErrors).length === 0;
 
 			case 2:
@@ -118,9 +160,9 @@
 						formErrors.importantFactors = t('form', 'choosing_barber_error');
 				} else if (userType === 'customer_makeup') {
 					if (formData.makeupOccasions.length === 0)
-						formErrors.makeupOccasions = 'Please select at least one occasion.';
+						formErrors.makeupOccasions = t('form', 'makeup_occasions_error');
 					if (formData.importantFactors.length === 0)
-						formErrors.importantFactors = t('form', 'choosing_barber_error');
+						formErrors.importantFactors = t('form', 'choosing_makeup_artist_error');
 				} else if (userType === 'owner_barber') {
 					if (!formData.commissionPreference)
 						formErrors.commissionPreference = t('form', 'charged_commission_error');
@@ -130,7 +172,10 @@
 					if (!formData.commissionPreference)
 						formErrors.commissionPreference = t('form', 'charged_commission_error');
 					if (!formData.portfolioInterest)
-						formErrors.portfolioInterest = t('form', 'discounts_subscriptions_error');
+						formErrors.portfolioInterest = t('form', 'portfolio_interest_error');
+				} else if (userType === 'other') {
+					if (!formData.otherDescription)
+						formErrors.otherDescription = t('form', 'other_description_error');
 				}
 				return Object.keys(formErrors).length === 0;
 
@@ -145,8 +190,10 @@
 		if (validateCurrentStep()) {
 			if (currentStep < totalSteps) {
 				currentStep++;
+				console.log(`[Form] Moved to step ${currentStep}`); // Debug
 			}
 		} else {
+			console.log(`[Form] Validation failed on step ${currentStep}:`, formErrors); // Debug
 			const firstErrorField = formContainer.querySelector('.error');
 			if (firstErrorField) {
 				firstErrorField.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -198,20 +245,39 @@
 		}
 	}
 
-	const submitAction = () => {
+	const submitAction: import('@sveltejs/kit').SubmitFunction = () => {
 		if (!validateCurrentStep()) {
 			return;
 		}
+		if (
+			!['customer_barber', 'customer_makeup', 'owner_barber', 'owner_makeup', 'other'].includes(
+				formData.userType
+			)
+		) {
+			formErrors.general = t('form', 'select_invalid');
+			return;
+		}
 		submitting = true;
-		return async ({ result, update }) => {
+		return async ({ formData, action, result, update }) => {
+			// Log FormData for debugging
+			const formDataEntries = Object.fromEntries(formData);
+			console.log('Client FormData:', {
+				...formDataEntries,
+				barberServices: formData.getAll('barberServices'),
+				makeupOccasions: formData.getAll('makeupOccasions'),
+				importantFactors: formData.getAll('importantFactors')
+			});
 			submitting = false;
+
 			if (result.type === 'success') {
 				isFormOpen.set(false);
 				showConfirmation = true;
 			} else if (result.type === 'failure') {
-				formErrors.general = result.data?.message || 'Submission failed. Please check your inputs.';
+				console.error('Submission error:', result.data);
+				formErrors.general = result.data?.message || t('form', 'submission_failed');
 			} else if (result.type === 'error') {
-				formErrors.general = result.error.message || 'An unexpected server error occurred.';
+				console.error('Server error:', result.error);
+				formErrors.general = result.error?.message || t('form', 'server_error');
 			}
 			await update({ reset: false });
 		};
@@ -236,14 +302,14 @@
 		{#if $isFormOpen}
 			<div
 				bind:this={formContainer}
-				class="form-container relative max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-2xl bg-white shadow-2xl"
+				class="form-container animate-card glass-card relative max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-2xl shadow-2xl"
 				in:fly={{ y: 50, duration: 400, easing: quintOut }}
 				out:fly={{ y: 50, duration: 300 }}
 			>
 				<button
 					on:click={closeAllModals}
-					class="absolute top-4 right-4 z-10 cursor-pointer rounded-full p-2 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700"
-					aria-label="Close form"
+					class="hover: absolute top-4 right-4 z-10 cursor-pointer rounded-full p-2 text-gray-500 transition-colors"
+					aria-label={t('form', 'close_form')}
 				>
 					<svg
 						xmlns="http://www.w3.org/2000/svg"
@@ -261,7 +327,7 @@
 					</svg>
 				</button>
 				<div class="p-6 sm:p-8">
-					<h2 class="mb-6 text-center text-2xl font-bold text-gray-900 sm:text-3xl">
+					<h2 class="section-title mb-6 text-center text-2xl font-bold sm:text-3xl">
 						{t('form', 'heading')}
 					</h2>
 					<div class="mb-6">
@@ -273,25 +339,30 @@
 						</div>
 						<div class="mt-2 flex justify-between text-xs text-gray-600">
 							<span></span>
-							<span class="font-medium">
+							<span class="text-subtitle font-medium">
 								{t('form', 'progress')}
-								{Math.round($progress * 100)}%</span
-							>
+								{Math.round($progress * 100)}%
+							</span>
 						</div>
 					</div>
-					<form method="POST" action="?/submitForm" use:enhance={submitAction}>
+					<form
+						method="POST"
+						action="?/submitForm"
+						use:enhance={submitAction}
+						class="text-subtitle"
+					>
 						<div
 							class:hidden={currentStep !== 1}
 							class="space-y-5"
 							transition:fade={{ duration: 200 }}
 						>
-							<h3 class="text-lg font-semibold text-gray-800">
+							<h3 class="section-title text-lg font-semibold">
 								{t('form', 'your_details')}
 							</h3>
 							<div>
 								<label
 									for="firstName"
-									class="block text-sm font-medium text-gray-700"
+									class="text-subtitle block text-sm font-medium"
 									aria-required="true"
 								>
 									{t('form', 'first_name')} <span class="text-red-500">*</span>
@@ -335,11 +406,7 @@
 								{/if}
 							</div>
 							<div>
-								<label
-									for="lastName"
-									class="block text-sm font-medium text-gray-700"
-									aria-required="true"
-								>
+								<label for="lastName" class="block text-sm font-medium" aria-required="true">
 									{t('form', 'last_name')} <span class="text-red-500">*</span>
 								</label>
 								<div class="relative mt-1">
@@ -379,11 +446,7 @@
 								{/if}
 							</div>
 							<div>
-								<label
-									for="email"
-									class="block text-sm font-medium text-gray-700"
-									aria-required="true"
-								>
+								<label for="email" class="block text-sm font-medium" aria-required="true">
 									{t('form', 'email')} <span class="text-red-500">*</span>
 								</label>
 								<div class="relative mt-1">
@@ -422,58 +485,18 @@
 									<p id="email-error" class="mt-1 text-xs text-red-600">{formErrors.email}</p>
 								{/if}
 							</div>
-							<fieldset>
-								<legend class="block text-sm font-medium text-gray-700" aria-required="true">
-									{t('form', 'describes_you')}
-									<span class="text-red-500">*</span>
-								</legend>
-								<div class="mt-2 space-y-2">
-									<label class="flex items-center text-sm">
-										<input
-											type="radio"
-											name="userType"
-											value="customer_barber"
-											bind:group={formData.userType}
-											class="mr-2 h-4 w-4 text-indigo-600 focus:ring-indigo-500"
-											aria-describedby="userType-error"
-										/>
-										{t('form', 'describes_you_1')}
-									</label>
-									<label class="flex items-center text-sm">
-										<input
-											type="radio"
-											name="userType"
-											value="customer_makeup"
-											bind:group={formData.userType}
-											class="mr-2 h-4 w-4 text-indigo-600 focus:ring-indigo-500"
-										/>
-										{t('form', 'describes_you_2')}
-									</label>
-									<label class="flex items-center text-sm">
-										<input
-											type="radio"
-											name="userType"
-											value="owner_barber"
-											bind:group={formData.userType}
-											class="mr-2 h-4 w-4 text-indigo-600 focus:ring-indigo-500"
-										/>
-										{t('form', 'describes_you_3')}
-									</label>
-									<label class="flex items-center text-sm">
-										<input
-											type="radio"
-											name="userType"
-											value="owner_makeup"
-											bind:group={formData.userType}
-											class="mr-2 h-4 w-4 text-indigo-600 focus:ring-indigo-500"
-										/>
-										{t('form', 'describes_you_4')}
-									</label>
-								</div>
+							<div>
+								<PremiumGlassSelect
+									name="userType"
+									label="describes_you"
+									options={userDescribe}
+									bind:selected={formData.userType}
+									required={true}
+								/>
 								{#if formErrors.userType}
 									<p id="userType-error" class="mt-1 text-xs text-red-600">{formErrors.userType}</p>
 								{/if}
-							</fieldset>
+							</div>
 						</div>
 
 						<div
@@ -483,39 +506,25 @@
 						>
 							{#if formData.userType === 'customer_barber'}
 								<div class="space-y-6">
-									<h3 class="text-lg font-semibold text-gray-800">
+									<h3 class="section-title text-lg font-semibold">
 										{t('form', 'barber_heading')}
 									</h3>
-									<fieldset>
-										<legend class="block text-sm font-medium text-gray-700">
-											{t('form', 'visit_barber')}
-											<span class="text-red-500">*</span>
-										</legend>
-										<select
+									<div>
+										<PremiumGlassSelect
 											name="visitFrequency"
-											bind:value={formData.visitFrequency}
-											class="block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm transition-all focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 {formErrors.visitFrequency
-												? 'error border-red-500'
-												: ''}"
-											aria-describedby="visitFrequency-error"
-										>
-											<option value="" disabled>Select frequency...</option>
-											<option value="weekly">
-												{t('form', 'visit_barber_1')}
-												Weekly</option
-											>
-											<option value="biweekly">{t('form', 'visit_barber_2')}</option>
-											<option value="monthly">{t('form', 'visit_barber_3')}</option>
-											<option value="few-months">{t('form', 'visit_barber_4')}</option>
-										</select>
+											label="visit_barber"
+											options={barberVisit}
+											bind:selected={formData.visitFrequency}
+											required={true}
+										/>
 										{#if formErrors.visitFrequency}
 											<p id="visitFrequency-error" class="mt-1 text-xs text-red-600">
 												{formErrors.visitFrequency}
 											</p>
 										{/if}
-									</fieldset>
+									</div>
 									<fieldset>
-										<legend class="block text-sm font-medium text-gray-700">
+										<legend class="block text-sm font-medium">
 											{t('form', 'barber_services')}
 											<span class="text-red-500">*</span>
 										</legend>
@@ -569,7 +578,7 @@
 										{/if}
 									</fieldset>
 									<fieldset>
-										<legend class="block text-sm font-medium text-gray-700">
+										<legend class="block text-sm font-medium">
 											{t('form', 'choosing_barber')}
 											<span class="text-red-500">*</span>
 										</legend>
@@ -613,10 +622,7 @@
 										{/if}
 									</fieldset>
 									<div>
-										<label
-											for="bookingFrustrations"
-											class="block text-sm font-medium text-gray-700"
-										>
+										<label for="bookingFrustrations" class="block text-sm font-medium">
 											{t('form', 'frustrations_barber')}
 										</label>
 										<textarea
@@ -632,7 +638,7 @@
 										</p>
 									</div>
 									<div>
-										<label for="generalMessage" class="block text-sm font-medium text-gray-700">
+										<label for="generalMessage" class="block text-sm font-medium">
 											{t('form', 'feedback')}
 										</label>
 										<textarea
@@ -649,14 +655,13 @@
 									</div>
 								</div>
 							{/if}
-
 							{#if formData.userType === 'customer_makeup'}
 								<div class="space-y-6">
-									<h3 class="text-lg font-semibold text-gray-800">
+									<h3 class="section-title text-lg font-semibold">
 										{t('form', 'makeup_heading')}
 									</h3>
 									<fieldset>
-										<legend class="block text-sm font-medium text-gray-700">
+										<legend class="block text-sm font-medium">
 											{t('form', 'makeup_questions')}
 											<span class="text-red-500">*</span>
 										</legend>
@@ -700,7 +705,7 @@
 										{/if}
 									</fieldset>
 									<fieldset>
-										<legend class="block text-sm font-medium text-gray-700">
+										<legend class="block text-sm font-medium">
 											{t('form', 'choosing_makeup_artist')} <span class="text-red-500">*</span>
 										</legend>
 										<div class="mt-2 space-y-2">
@@ -743,10 +748,7 @@
 										{/if}
 									</fieldset>
 									<div>
-										<label
-											for="bookingFrustrations"
-											class="block text-sm font-medium text-gray-700"
-										>
+										<label for="bookingFrustrations" class="block text-sm font-medium">
 											{t('form', 'frustrations_booking_makeup')}
 										</label>
 										<textarea
@@ -762,7 +764,7 @@
 										</p>
 									</div>
 									<div>
-										<label for="generalMessage" class="block text-sm font-medium text-gray-700">
+										<label for="generalMessage" class="block text-sm font-medium">
 											{t('form', 'feedback')}
 										</label>
 										<textarea
@@ -779,73 +781,41 @@
 									</div>
 								</div>
 							{/if}
-
 							{#if formData.userType === 'owner_barber'}
 								<div class="space-y-6">
-									<h3 class="text-lg font-semibold text-gray-800">
+									<h3 class="section-title text-lg font-semibold">
 										{t('form', 'business_heading')}
 									</h3>
-									<fieldset>
-										<legend class="block text-sm font-medium text-gray-700">
-											{t('form', 'charged_commission')}
-
-											<span class="text-red-500">*</span>
-										</legend>
-										<select
+									<div>
+										<PremiumGlassSelect
 											name="commissionPreference"
-											bind:value={formData.commissionPreference}
-											class="block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm transition-all focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 {formErrors.commissionPreference
-												? 'error border-red-500'
-												: ''}"
-											aria-describedby="commissionPreference-error"
-										>
-											<option value="" disabled>{t('form', 'charged_commission_0')} </option>
-											<option value="yes_5_10">{t('form', 'charged_commission_1')} </option>
-											<option value="yes_10_15">{t('form', 'charged_commission_2')} </option>
-											<option value="no_monthly_fee">{t('form', 'charged_commission_3')} </option>
-										</select>
+											label="charged_commission"
+											options={commissionCharge}
+											bind:selected={formData.commissionPreference}
+											required={true}
+										/>
 										{#if formErrors.commissionPreference}
 											<p id="commissionPreference-error" class="mt-1 text-xs text-red-600">
 												{formErrors.commissionPreference}
 											</p>
 										{/if}
-									</fieldset>
-									<fieldset>
-										<legend class="block text-sm font-medium text-gray-700">
-											{t('form', 'discounts_subscriptions')}
-
-											<span class="text-red-500">*</span>
-										</legend>
-										<select
+									</div>
+									<div>
+										<PremiumGlassSelect
 											name="offerDiscounts"
-											bind:value={formData.offerDiscounts}
-											class="block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm transition-all focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 {formErrors.offerDiscounts
-												? 'error border-red-500'
-												: ''}"
-											aria-describedby="offerDiscounts-error"
-										>
-											<option value="" disabled>
-												{t('form', 'discounts_subscriptions_0')}
-											</option>
-											<option value="yes_10_percent"
-												>{t('form', 'discounts_subscriptions_1')}</option
-											>
-											<option value="yes_20_percent"
-												>{t('form', 'discounts_subscriptions_2')}</option
-											>
-											<option value="yes_subscriptions"
-												>{t('form', 'discounts_subscriptions_3')}</option
-											>
-											<option value="no">{t('form', 'discounts_subscriptions_4')}</option>
-										</select>
+											label="discounts_subscriptions"
+											options={discountsSubscriptions}
+											bind:selected={formData.offerDiscounts}
+											required={true}
+										/>
 										{#if formErrors.offerDiscounts}
 											<p id="offerDiscounts-error" class="mt-1 text-xs text-red-600">
 												{formErrors.offerDiscounts}
 											</p>
 										{/if}
-									</fieldset>
+									</div>
 									<div>
-										<label for="biggestChallenges" class="block text-sm font-medium text-gray-700">
+										<label for="biggestChallenges" class="block text-sm font-medium">
 											{t('form', 'managing_bookings')}
 										</label>
 										<textarea
@@ -862,63 +832,41 @@
 									</div>
 								</div>
 							{/if}
-
 							{#if formData.userType === 'owner_makeup'}
 								<div class="space-y-6">
-									<h3 class="text-lg font-semibold text-gray-800">
+									<h3 class="section-title text-lg font-semibold">
 										{t('form', 'business_heading')}
 									</h3>
-									<fieldset>
-										<legend class="block text-sm font-medium text-gray-700">
-											{t('form', 'charged_commission')}
-											<span class="text-red-500">*</span>
-										</legend>
-										<select
+									<div>
+										<PremiumGlassSelect
 											name="commissionPreference"
-											bind:value={formData.commissionPreference}
-											class="block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm transition-all focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 {formErrors.commissionPreference
-												? 'error border-red-500'
-												: ''}"
-											aria-describedby="commissionPreference-error"
-										>
-											<option value="" disabled>
-												{t('form', 'charged_commission_0')}
-											</option>
-											<option value="yes_5_10">{t('form', 'charged_commission_1')}</option>
-											<option value="yes_10_15">{t('form', 'charged_commission_2')}</option>
-											<option value="no_monthly_fee">{t('form', 'charged_commission_3')}</option>
-										</select>
+											label="charged_commission"
+											options={commissionCharge}
+											bind:selected={formData.commissionPreference}
+											required={true}
+										/>
 										{#if formErrors.commissionPreference}
 											<p id="commissionPreference-error" class="mt-1 text-xs text-red-600">
 												{formErrors.commissionPreference}
 											</p>
 										{/if}
-									</fieldset>
-									<fieldset>
-										<legend class="block text-sm font-medium text-gray-700">
-											{t('form', 'features')} <span class="text-red-500">*</span>
-										</legend>
-										<select
+									</div>
+									<div>
+										<PremiumGlassSelect
 											name="portfolioInterest"
-											bind:value={formData.portfolioInterest}
-											class="block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm transition-all focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 {formErrors.portfolioInterest
-												? 'error border-red-500'
-												: ''}"
-											aria-describedby="portfolioInterest-error"
-										>
-											<option value="" disabled> {t('form', 'features_0')} </option>
-											<option value="yes_high_priority"> {t('form', 'features_1')} </option>
-											<option value="yes_valuable"> {t('form', 'features_2')} </option>
-											<option value="no"> {t('form', 'features_3')} </option>
-										</select>
+											label="features"
+											options={makeupFeature}
+											bind:selected={formData.portfolioInterest}
+											required={true}
+										/>
 										{#if formErrors.portfolioInterest}
 											<p id="portfolioInterest-error" class="mt-1 text-xs text-red-600">
 												{formErrors.portfolioInterest}
 											</p>
 										{/if}
-									</fieldset>
+									</div>
 									<div>
-										<label for="biggestChallenges" class="block text-sm font-medium text-gray-700">
+										<label for="biggestChallenges" class="block text-sm font-medium">
 											{t('form', 'managing_bookings')}
 										</label>
 										<textarea
@@ -932,6 +880,34 @@
 										<p class="mt-1 text-xs text-gray-500">
 											{t('form', 'managing_bookings_optional')}
 										</p>
+									</div>
+								</div>
+							{/if}
+							{#if formData.userType === 'other'}
+								<div class="space-y-6">
+									<h3 class="section-title text-lg font-semibold">
+										{t('form', 'other_heading')}
+									</h3>
+									<div>
+										<label for="otherDescription" class="block text-sm font-medium">
+											{t('form', 'other_description')} <span class="text-red-500">*</span>
+										</label>
+										<textarea
+											id="otherDescription"
+											name="otherDescription"
+											bind:value={formData.otherDescription}
+											rows="4"
+											class="block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm transition-all focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 {formErrors.otherDescription
+												? 'error border-red-500'
+												: ''}"
+											placeholder={t('form', 'other_description_placeholder')}
+											aria-describedby="otherDescription-error"
+										></textarea>
+										{#if formErrors.otherDescription}
+											<p id="otherDescription-error" class="mt-1 text-xs text-red-600">
+												{formErrors.otherDescription}
+											</p>
+										{/if}
 									</div>
 								</div>
 							{/if}
@@ -942,90 +918,135 @@
 							class="space-y-4"
 							transition:fade={{ duration: 200 }}
 						>
-							<h3 class="text-lg font-semibold text-gray-800">Review Your Information</h3>
-							<div class="rounded-lg bg-gray-50 p-4">
-								<div class="grid gap-2 text-sm">
-									<p><strong>First Name:</strong> {formData.firstName}</p>
-									<p><strong>Last Name:</strong> {formData.lastName}</p>
-									<p><strong>Email:</strong> {formData.email}</p>
-									<p>
-										<strong>User Type:</strong>
-										{formData.userType.replace(/_/g, ' ').replace(/\b\w/g, (l) => l.toUpperCase())}
-									</p>
-									{#if formData.userType === 'other'}
-										<p><strong>Description:</strong> {formData.otherDescription || 'N/A'}</p>
-									{/if}
-									{#if formData.userType === 'customer_barber'}
-										<p><strong>Visit Frequency:</strong> {formData.visitFrequency || 'N/A'}</p>
+							<h3 class="section-title text-lg font-semibold">{t('form', 'review_information')}</h3>
+							<div class="rounded-lg p-4">
+								<div class="rounded-lg p-4">
+									<div class="grid gap-2 text-sm">
+										<p><strong>{t('form', 'first_name')}:</strong> {formData.firstName}</p>
+										<p><strong>{t('form', 'last_name')}:</strong> {formData.lastName}</p>
+										<p><strong>{t('form', 'email')}:</strong> {formData.email}</p>
 										<p>
-											<strong>Barber Services:</strong>
-											{formData.barberServices.join(', ') || 'N/A'}
+											<strong>{t('form', 'describes_you')}:</strong>
+											{t(
+												'form',
+												userDescribe.find((o) => o.value === formData.userType)?.label || 'N/A'
+											)}
 										</p>
-										<p>
-											<strong>Important Factors:</strong>
-											{formData.importantFactors.join(', ') || 'N/A'}
-										</p>
-										<p>
-											<strong>Booking Frustrations:</strong>
-											{formData.bookingFrustrations || 'N/A'}
-										</p>
-										<p><strong>Additional Feedback:</strong> {formData.generalMessage || 'N/A'}</p>
-									{:else if formData.userType === 'customer_makeup'}
-										<p>
-											<strong>Makeup Occasions:</strong>
-											{formData.makeupOccasions.join(', ') || 'N/A'}
-										</p>
-										<p>
-											<strong>Important Factors:</strong>
-											{formData.importantFactors.join(', ') || 'N/A'}
-										</p>
-										<p>
-											<strong>Booking Frustrations:</strong>
-											{formData.bookingFrustrations || 'N/A'}
-										</p>
-										<p><strong>Additional Feedback:</strong> {formData.generalMessage || 'N/A'}</p>
-									{:else if formData.userType === 'owner_barber'}
-										<p>
-											<strong>Commission Preference:</strong>
-											{formData.commissionPreference || 'N/A'}
-										</p>
-										<p><strong>Offer Discounts:</strong> {formData.offerDiscounts || 'N/A'}</p>
-										<p>
-											<strong>Biggest Challenges:</strong>
-											{formData.biggestChallenges || 'N/A'}
-										</p>
-									{:else if formData.userType === 'owner_makeup'}
-										<p>
-											<strong>Commission Preference:</strong>
-											{formData.commissionPreference || 'N/A'}
-										</p>
-										<p>
-											<strong>Portfolio Interest:</strong>
-											{formData.portfolioInterest || 'N/A'}
-										</p>
-										<p>
-											<strong>Biggest Challenges:</strong>
-											{formData.biggestChallenges || 'N/A'}
-										</p>
-									{/if}
+										{#if formData.userType === 'other'}
+											<p>
+												<strong>{t('form', 'other_description')}:</strong>
+												{formData.otherDescription || 'N/A'}
+											</p>
+										{/if}
+										{#if formData.userType === 'customer_barber'}
+											<p>
+												<strong>{t('form', 'visit_barber')}:</strong>
+												{t(
+													'form',
+													barberVisit.find((o) => o.value === formData.visitFrequency)?.label ||
+														'N/A'
+												)}
+											</p>
+											<p>
+												<strong>{t('form', 'barber_services')}:</strong>
+												{formData.barberServices.join(', ') || 'N/A'}
+											</p>
+											<p>
+												<strong>{t('form', 'choosing_barber')}:</strong>
+												{formData.importantFactors.join(', ') || 'N/A'}
+											</p>
+											<p>
+												<strong>{t('form', 'frustrations_barber')}:</strong>
+												{formData.bookingFrustrations || 'N/A'}
+											</p>
+											<p>
+												<strong>{t('form', 'feedback')}:</strong>
+												{formData.generalMessage || 'N/A'}
+											</p>
+										{:else if formData.userType === 'customer_makeup'}
+											<p>
+												<strong>{t('form', 'makeup_questions')}:</strong>
+												{formData.makeupOccasions.join(', ') || 'N/A'}
+											</p>
+											<p>
+												<strong>{t('form', 'choosing_makeup_artist')}:</strong>
+												{formData.importantFactors.join(', ') || 'N/A'}
+											</p>
+											<p>
+												<strong>{t('form', 'frustrations_booking_makeup')}:</strong>
+												{formData.bookingFrustrations || 'N/A'}
+											</p>
+											<p>
+												<strong>{t('form', 'feedback')}:</strong>
+												{formData.generalMessage || 'N/A'}
+											</p>
+										{:else if formData.userType === 'owner_barber'}
+											<p>
+												<strong>{t('form', 'charged_commission')}:</strong>
+												{t(
+													'form',
+													commissionCharge.find((o) => o.value === formData.commissionPreference)
+														?.label || 'N/A'
+												)}
+											</p>
+											<p>
+												<strong>{t('form', 'discounts_subscriptions')}:</strong>
+												{t(
+													'form',
+													discountsSubscriptions.find((o) => o.value === formData.offerDiscounts)
+														?.label || 'N/A'
+												)}
+											</p>
+											<p>
+												<strong>{t('form', 'managing_bookings')}:</strong>
+												{formData.biggestChallenges || 'N/A'}
+											</p>
+										{:else if formData.userType === 'owner_makeup'}
+											<p>
+												<strong>{t('form', 'charged_commission')}:</strong>
+												{t(
+													'form',
+													commissionCharge.find((o) => o.value === formData.commissionPreference)
+														?.label || 'N/A'
+												)}
+											</p>
+											<p>
+												<strong>{t('form', 'features')}:</strong>
+												{t(
+													'form',
+													makeupFeature.find((o) => o.value === formData.portfolioInterest)
+														?.label || 'N/A'
+												)}
+											</p>
+											<p>
+												<strong>{t('form', 'managing_bookings')}:</strong>
+												{formData.biggestChallenges || 'N/A'}
+											</p>
+										{:else if formData.userType === 'other'}
+											<p>
+												<strong>{t('form', 'other_description')}:</strong>
+												{formData.otherDescription || 'N/A'}
+											</p>
+										{/if}
+									</div>
 								</div>
 							</div>
+
+							{#if formErrors.general}
+								<div
+									class="mt-4 rounded-lg bg-red-50 p-3 text-sm text-red-700"
+									transition:fade={{ duration: 200 }}
+								>
+									{formErrors.general}
+								</div>
+							{/if}
 						</div>
-
-						{#if formErrors.general}
-							<div
-								class="mt-4 rounded-lg bg-red-50 p-3 text-sm text-red-700"
-								transition:fade={{ duration: 200 }}
-							>
-								{formErrors.general}
-							</div>
-						{/if}
-
+						<!-- Navigation Buttons -->
 						<div class="mt-6 flex justify-between border-t border-gray-200 pt-5">
 							<button
 								type="button"
 								on:click={prevStep}
-								class="inline-flex cursor-pointer items-center rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:ring-2 focus:ring-indigo-500 focus:outline-none disabled:opacity-50 {currentStep ===
+								class="cta-button cta-button-secondary inline-flex cursor-pointer items-center rounded-lg focus:outline-none disabled:opacity-50 {currentStep ===
 								1
 									? 'invisible'
 									: ''}"
@@ -1044,60 +1065,16 @@
 										d="M15 19l-7-7 7-7"
 									/>
 								</svg>
-								Back
+								{t('form', 'back')}
 							</button>
-							{#if currentStep < totalSteps}
-								<button
-									type="button"
-									on:click={nextStep}
-									class="inline-flex cursor-pointer items-center rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
-								>
-									Continue
-									<svg
-										xmlns="http://www.w3.org/2000/svg"
-										class="ml-2 h-4 w-4"
-										fill="none"
-										viewBox="0 0 24 24"
-										stroke="currentColor"
+							<div class="flex space-x-2">
+								{#if currentStep < totalSteps}
+									<button
+										type="button"
+										on:click={nextStep}
+										class="cta-button cta-button-primary inline-flex cursor-pointer items-center rounded-lg bg-[rgba(59,130,246,0.1)] px-4 py-0 text-sm font-medium text-gray-900 shadow-sm ring-1 ring-gray-300 hover:bg-[rgba(59,130,246,0.2)] focus:ring-2 focus:ring-indigo-500 focus:outline-none"
 									>
-										<path
-											stroke-linecap="round"
-											stroke-linejoin="round"
-											stroke-width="2"
-											d="M9 5l7 7-7 7"
-										/>
-									</svg>
-								</button>
-							{:else}
-								<button
-									type="submit"
-									class="inline-flex cursor-pointer items-center rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 focus:ring-2 focus:ring-indigo-500 focus:outline-none disabled:opacity-50"
-									disabled={submitting}
-								>
-									{#if submitting}
-										<svg
-											class="mr-2 h-4 w-4 animate-spin"
-											xmlns="http://www.w3.org/2000/svg"
-											fill="none"
-											viewBox="0 0 24 24"
-										>
-											<circle
-												class="opacity-25"
-												cx="12"
-												cy="12"
-												r="10"
-												stroke="currentColor"
-												stroke-width="4"
-											></circle>
-											<path
-												class="opacity-75"
-												fill="currentColor"
-												d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-											></path>
-										</svg>
-										Processing...
-									{:else}
-										Submit
+										{t('form', 'continue')}
 										<svg
 											xmlns="http://www.w3.org/2000/svg"
 											class="ml-2 h-4 w-4"
@@ -1112,9 +1089,55 @@
 												d="M9 5l7 7-7 7"
 											/>
 										</svg>
-									{/if}
-								</button>
-							{/if}
+									</button>
+								{:else}
+									<button
+										type="submit"
+										class="cta-button cta-button-primary inline-flex cursor-pointer items-center rounded-lg bg-[rgba(59,130,246,0.1)] px-4 py-0 text-sm font-medium text-gray-900 shadow-sm ring-1 ring-gray-300 hover:bg-[rgba(59,130,246,0.2)] focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+										disabled={submitting}
+									>
+										{#if submitting}
+											<svg
+												class="mr-2 h-4 w-4 animate-spin"
+												xmlns="http://www.w3.org/2000/svg"
+												fill="none"
+												viewBox="0 0 24 24"
+											>
+												<circle
+													class="opacity-25"
+													cx="12"
+													cy="12"
+													r="10"
+													stroke="currentColor"
+													stroke-width="4"
+												></circle>
+												<path
+													class="opacity-75"
+													fill="currentColor"
+													d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+												></path>
+											</svg>
+											{t('form', 'processing')}
+										{:else}
+											{t('form', 'submit')}
+											<svg
+												xmlns="http://www.w3.org/2000/svg"
+												class="ml-2 h-4 w-4"
+												fill="none"
+												viewBox="0 0 24 24"
+												stroke="currentColor"
+											>
+												<path
+													stroke-linecap="round"
+													stroke-linejoin="round"
+													stroke-width="2"
+													d="M9 5l7 7-7 7"
+												/>
+											</svg>
+										{/if}
+									</button>
+								{/if}
+							</div>
 						</div>
 					</form>
 				</div>
@@ -1145,15 +1168,13 @@
 						/>
 					</svg>
 				</div>
-
-				<h3 id="confirmation-title" class="mb-4 text-2xl font-bold text-gray-900">Thank you!</h3>
-
-				<p id="confirmation-message" class="mb-2 text-gray-700">
-					A confirmation email has been sent to <span class="font-medium">{formData.email}</span>.
+				<h3 id="confirmation-title" class="section-title mb-4 text-2xl font-bold">
+					{t('form', 'thank_you')}
+				</h3>
+				<p id="confirmation-message" class="mb-2">
+					{t('form', 'confirmation_email_sent', { email: formData.email })}
 				</p>
-
-				<p class="mb-6 text-gray-600">Please check your inbox and confirm your email to proceed.</p>
-
+				<p class="mb-6 text-gray-600">Check Inbox</p>
 				<button
 					on:click={closeAllModals}
 					class="inline-flex items-center justify-center rounded-lg bg-indigo-600 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-indigo-700 focus:ring-2 focus:ring-indigo-500 focus:outline-none"

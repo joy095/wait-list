@@ -197,7 +197,7 @@
 							>
 						</p>
 						<img
-							src="/img/plane.png"
+							src="/img/standing.webp"
 							alt="Paper plane illustration"
 							class="plane-img mt-4 w-full max-w-xs md:block md:max-w-full"
 						/>
@@ -321,6 +321,7 @@
 	}
 
 	.plane-img {
-		animation: bounce-animation 3s infinite; /* 3s duration, infinite loop */
+		/*	animation: bounce-animation 3s infinite; /* 3s duration, infinite loop */
+		border-radius: 0.5rem;
 	}
 </style>
