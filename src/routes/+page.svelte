@@ -29,9 +29,4 @@
 	<meta name="twitter:image" content={data.image} />
 </svelte:head>
 
-<!-- <HomePage /> -->
-
-<main class="p-10">
-	<h1 class="text-4xl font-bold">{data.title}</h1>
-	<p class="mt-4 text-lg">{data.description}</p>
-</main>
+<HomePage />

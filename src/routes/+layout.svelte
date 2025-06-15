@@ -8,66 +8,40 @@
 	import { get } from 'svelte/store';
 	import i18n, { initI18n, currentLanguage, i18nContext } from '$lib/i18n';
 	import { page } from '$app/stores';
-	import { goto, invalidateAll } from '$app/navigation'; // Ensure invalidateAll is imported
+	import { goto, invalidateAll } from '$app/navigation';
 	import Form from '$lib/components/Form.svelte';
 
 	interface LayoutData {
 		i18n: {
 			lng: string;
-			resources: Record<string, Record<string, string>>; // Correctly typed for namespaces
+			resources: Record<string, Record<string, string>>;
 		};
 	}
 
 	let { data, children }: { data: LayoutData; children: any } = $props();
+	let initialized = !browser; // true for SSR so children render
 
-	let initialized = $state(false);
-
+	// i18n Initialization (client only)
 	onMount(async () => {
-		// console.log('--- +layout.svelte onMount START ---');
-		// console.log('+layout.svelte: onMount - Initializing i18n with data.i18n.lng:', data.i18n.lng);
-
-		// Pass the pre-loaded resources directly to initI18n
 		await initI18n(data.i18n.lng, data.i18n.resources);
 		initialized = true;
-		// console.log(
-		// 	'+layout.svelte: i18n initialized on client, current language:',
-		// 	get(i18nContext.currentLanguage)
-		// );
-		// console.log('--- +layout.svelte onMount END ---');
 	});
 
+	// Provide i18n context
 	setContext('i18n', {
 		...i18nContext,
 		changeLanguage: async (lng: string) => {
-			// console.log('--- +layout.svelte changeLanguage START ---');
-			// console.log('+layout.svelte: changeLanguage called for:', lng);
-
-			// 1. Update i18next's internal language and the Svelte store
-			await i18n.changeLanguage(lng); // This updates i18n's internal language and the Svelte store
-			// console.log('+layout.svelte: i18n language changed to:', i18n.language);
-
-			// 2. Update the URL query parameter
+			await i18n.changeLanguage(lng);
 			const url = new URL(get(page).url);
 			url.searchParams.set('lang', lng);
-			const newUrl = url.toString();
-			// console.log('+layout.svelte: Attempting to goto new URL:', newUrl);
-
-			// Use goto to update the URL in the address bar without reloading the page
-			// This is crucial for the URL parameter to appear immediately
-			await goto(newUrl, { replaceState: true, noScroll: true });
-			// console.log('+layout.svelte: goto completed.');
-
-			// 3. Invalidate all data loaders to force a re-render of the current page
-			// This will cause +layout.ts (and any +page.ts) load functions to re-run
-			// console.log('+layout.svelte: Invalidating all data to force re-render.');
+			await goto(url.toString(), { replaceState: true, noScroll: true });
 			await invalidateAll();
-			// console.log('--- +layout.svelte changeLanguage END ---');
 		},
-		currentLanguage: currentLanguage // Provide the store itself
+		currentLanguage: currentLanguage
 	});
 
+	// Lenis Scroll Setup
 	let lenisInstance: Lenis | null = null;
-
 	onMount(() => {
 		if (browser) {
 			lenisInstance = new Lenis({
@@ -80,11 +54,6 @@
 				infinite: false,
 				autoResize: true
 			});
-
-			lenisInstance.on('scroll', (e: any) => {
-				// console.log('Lenis scroll event:', e);
-			});
-
 			function raf(time: DOMHighResTimeStamp) {
 				lenisInstance?.raf(time);
 				requestAnimationFrame(raf);
@@ -94,9 +63,7 @@
 	});
 
 	onDestroy(() => {
-		if (lenisInstance) {
-			lenisInstance.destroy();
-		}
+		lenisInstance?.destroy();
 	});
 </script>
 
@@ -113,10 +80,13 @@
 <Navbar />
 
 <main class="min-h-screen pt-[64px]">
+	<!-- Always render children to ensure metadata is available for SSR -->
+	{@render children()}
+
 	{#if initialized}
-		{@render children()}
 		<Form />
-	{:else}
+	{:else if browser}
+		<!-- Only show loading state on client -->
 		<div class="flex min-h-screen items-center justify-center bg-gray-100 text-gray-700">
 			Loading translations...
 		</div>
