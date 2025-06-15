@@ -85,11 +85,6 @@
 
 	{#if initialized}
 		<Form />
-	{:else if browser}
-		<!-- Only show loading state on client -->
-		<div class="flex min-h-screen items-center justify-center bg-gray-100 text-gray-700">
-			Loading translations...
-		</div>
 	{/if}
 </main>
 
